@@ -59,7 +59,7 @@ class Uadmin:
         print(self.password)
         return
 
-    def verify_userid(self, username):
+    def verify_userid(self, userid):
         if len(userid) < 1 or len(userid) > 8:
             print('Error - userid length must be 1 to 8 characters')
             raise Exception
