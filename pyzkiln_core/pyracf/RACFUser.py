@@ -21,6 +21,7 @@ class RACFUser:
         else:
             self.racf = racf
         self.racf.init_svc(py_racf.R_ADMIN)
+        self.groups = []
         if build_user_from_extract=1 and userid is None:
             print('Error - must specify userid to be extracted')
             raise Exception
@@ -84,6 +85,14 @@ class RACFUser:
     def set_extracted_variables(self, traits):
         self.userid = traits['profile']
         self.name = traits['base']['name']
+        return
+
+    def add_to_group(self, group):
+        self.groups.append(group)
+        return
+
+    def remove_from_group(self, group):
+        self.groups.remove(group)
         return
         
 
