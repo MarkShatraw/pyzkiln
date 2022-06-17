@@ -153,17 +153,16 @@ class Pxtr:
             self.racf.log.debug('    Return data file: %s' %
                                 (self.racf.results_df.get_name()))
 
-        # Collect any parms from the parent function (R_admin) that the user
-        # may have set, and assemble them into the input parameter json file
-        # that gets passed to the C code.
-        call_parms = self.radmin.bld_request()
-        call_parms = call_parms + '            "func":\n'
-        call_parms = call_parms + json.dumps(self.parms, indent=16) + '\n'
-        call_parms = call_parms + '        }\n'
-        call_parms = call_parms + '    }\n'
-        call_parms = call_parms + '}\n'
+            # Collect any parms from the parent function (R_admin) that the user
+            # may have set, and assemble them into the input parameter json file
+            # that gets passed to the C code.
+            call_parms = self.radmin.bld_request()
+            call_parms = call_parms + '            "func":\n'
+            call_parms = call_parms + json.dumps(self.parms, indent=16) + '\n'
+            call_parms = call_parms + '        }\n'
+            call_parms = call_parms + '    }\n'
+            call_parms = call_parms + '}\n'
 
-        if not memory_only:
             self.racf.log.debug('    parms built, write to %s' %
                                 (self.racf.request_df.get_name()))
 
@@ -189,6 +188,13 @@ class Pxtr:
             # Read and parse the results to return to the caller.
             return self.racf.get_results()
         else:
+            call_parms = (
+                '            "func":\n'
+                + json.dumps(self.parms, indent=16) + '\n'
+                + '        }\n'
+                + '    }\n'
+                + '}\n'
+            )
             self.racf.libracf.r_admin.restype = C.c_char_p
             call_parms_pointer = C.create_string_buffer(call_parms)
             f_debug = C.c_int(self.racf.get_debug())
