@@ -145,12 +145,13 @@ class Pxtr:
         else:
             return 0
 
-    def run(self):
+    def run(self, memory_only=False):
         self.racf.log.debug('Pxtr run')
-        self.racf.log.debug('    Call data file: %s' %
-                            (self.racf.request_df.get_name()))
-        self.racf.log.debug('    Return data file: %s' %
-                            (self.racf.results_df.get_name()))
+        if not memory_only:
+            self.racf.log.debug('    Call data file: %s' %
+                                (self.racf.request_df.get_name()))
+            self.racf.log.debug('    Return data file: %s' %
+                                (self.racf.results_df.get_name()))
 
         # Collect any parms from the parent function (R_admin) that the user
         # may have set, and assemble them into the input parameter json file
@@ -161,30 +162,41 @@ class Pxtr:
         call_parms = call_parms + '        }\n'
         call_parms = call_parms + '    }\n'
         call_parms = call_parms + '}\n'
-        self.racf.log.debug('    parms built, write to %s' %
-                            (self.racf.request_df.get_name()))
 
-        # Write the parms to the request data file.  We're using this like a
-        # pipe, but are using a regular file instead to avoid inherent
-        # limitations on the length of data being passed.  Requests to RACF
-        # aren't generally that long, but results from RACF can be very verbose.
-        self.racf.request_df.open('w')
-        self.racf.request_df.write(call_parms)
-        self.racf.request_df.close()
+        if not memory_only:
+            self.racf.log.debug('    parms built, write to %s' %
+                                (self.racf.request_df.get_name()))
 
-        # Call the C interface to the profile extract function of the R_admin
-        # service.  Pass in the name of the request and results files.
-        self.racf.libracf.r_admin.restype = C.c_int
-        self.racf.libracf.r_admin.argtypes = [C.c_char_p, C.c_char_p, C.c_int]
-        request_fn = C.c_char_p(bytes(self.racf.request_df.get_name(),
-                                'ISO8859-1'))
-        results_fn = C.c_char_p(bytes(self.racf.results_df.get_name(),
-                                'ISO8859-1'))
-        f_debug = C.c_int(self.racf.get_debug())
-        rc = self.racf.libracf.r_admin(request_fn, results_fn, f_debug)
+            # Write the parms to the request data file.  We're using this like a
+            # pipe, but are using a regular file instead to avoid inherent
+            # limitations on the length of data being passed.  Requests to RACF
+            # aren't generally that long, but results from RACF can be very verbose.
+            self.racf.request_df.open('w')
+            self.racf.request_df.write(call_parms)
+            self.racf.request_df.close()
 
-        # Read and parse the results to return to the caller.
-        return self.racf.get_results()
+            # Call the C interface to the profile extract function of the R_admin
+            # service.  Pass in the name of the request and results files.
+            self.racf.libracf.r_admin.restype = C.c_int
+            self.racf.libracf.r_admin.argtypes = [C.c_char_p, C.c_char_p, C.c_int]
+            request_fn = C.c_char_p(bytes(self.racf.request_df.get_name(),
+                                    'ISO8859-1'))
+            results_fn = C.c_char_p(bytes(self.racf.results_df.get_name(),
+                                    'ISO8859-1'))
+            f_debug = C.c_int(self.racf.get_debug())
+            rc = self.racf.libracf.r_admin(request_fn, results_fn, f_debug)
+
+            # Read and parse the results to return to the caller.
+            return self.racf.get_results()
+        else:
+            self.racf.libracf.r_admin.restype = C.c_char_p
+            call_parms_pointer = C.create_string_buffer(call_parms)
+            f_debug = C.c_int(self.racf.get_debug())
+            json_result = self.racf.libracf.r_admin_memory(call_parms_pointer, f_debug).value
+            return json.loads(json_result)
+
+
+
 
     def show(self):
         self.racf.log.debug('Pxtr - extract parms function:')

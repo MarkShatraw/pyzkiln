@@ -98,6 +98,48 @@ int r_admin(char *pFile_name_req, char *pFile_name_res, int fDebug)
     return (int)rc;
    }                                   // r_admin
 
+char* r_admin_memory(char *pJson_str_req, int fDebug)
+{
+   RC rc = SUCCESS;
+   R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
+   char *pJson_str_res = NULL;
+
+   // Process request
+   log_debug(pRACtl->pLog, "Build key-value list for request");
+   pRACtl->pKVCtl_req = json_to_kv(pJson_str_req, pRACtl->pLog);
+   log_set_name(pRACtl->pLog, "R_admin");
+
+   if (pRACtl->pKVCtl_req != NULL)
+      {
+         // kv_print(pRACtl->pKVCtl_req);
+         log_debug(pRACtl->pLog, "Get the function type requested");
+         pRACtl->iFunc_type = ra_get_func_type(pRACtl, pRACtl->pKVCtl_req);
+
+         if (pRACtl->iFunc_type > ADMIN_FUNC_NONE)
+         {
+            log_debug(pRACtl->pLog, "Perform RACF runction");
+            pRACtl->pKVCtl_res = ra_run_function(pRACtl, pRACtl->iFunc_type);
+         }
+
+      }
+
+   // Process response
+   if (pRACtl->pKVCtl_res != NULL)
+   {
+      log_debug(pRACtl->pLog, "Build json for results");
+      pJson_str_res = json_from_kv(pRACtl->pKVCtl_res, pRACtl->pLog);
+      log_set_name(pRACtl->pLog, "R_admin");
+   }
+   else
+      rc = FAILURE;
+
+   if (pJson_str_req != NULL)
+      free(pJson_str_req);
+   if (pJson_str_res != NULL)
+      free(pJson_str_res);
+
+   return pJson_str_res;
+}                                   // r_admin
 
 // -----------------------------------------------------------------------
 // Local subroutines
