@@ -102,7 +102,6 @@ int r_admin(char *pFile_name_req, char *pFile_name_res, int fDebug)
 
 char* r_admin_memory(char *pJson_str_req, int fDebug)
 {
-   //R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
    R_ADMIN_CTL_T *pRACtl = ra_init_memory((FLAG)fDebug);
    char *pJson_str_res = NULL;
 
@@ -135,8 +134,7 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
 
    if (pJson_str_req != NULL)
       free(pJson_str_req);
-   if (pJson_str_res != NULL)
-      free(pJson_str_res);
+   if (pJson_str_res == NULL)
       pJson_str_res = malloc(10);
       strcpy(pJson_str_res, "{\"rc\": 8}");
 
