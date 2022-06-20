@@ -89,7 +89,7 @@ ADMIN_XTR_NEXT_DATASET = 0x23    # Extr the next dataset profile
 
 
 # Use for Radmin specific exceptions
-class RadminError:
+class RadminError(Execption):
     def __init__(self, message):
         self.message = message
     def __str__(self):
