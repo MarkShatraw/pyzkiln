@@ -196,12 +196,11 @@ class Pxtr:
                 + '    }\n'
                 + '}\n'
             )
-            self.racf.libracf.r_admin.restype = C.c_char_p
+            self.racf.libracf.r_admin_memory.restype = C.c_char_p
             call_parms_pointer = C.create_string_buffer(bytes(call_parms, 'utf-8'), len(call_parms))
             f_debug = C.c_int(self.racf.get_debug())
-            result = self.racf.libracf.r_admin_memory(call_parms_pointer, f_debug)
-            result.value
-            return json.loads(result.value)
+            result_json = self.racf.libracf.r_admin_memory(call_parms_pointer, f_debug)
+            return json.loads(str(result_json, 'utf-8'))
 
 
 

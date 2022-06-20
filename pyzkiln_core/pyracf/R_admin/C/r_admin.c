@@ -137,7 +137,6 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
    if (pJson_str_res == NULL)
       pJson_str_res = malloc(10);
       strcpy(pJson_str_res, "{\"rc\": 8}");
-   printf("%s", pJson_str_res);
    return pJson_str_res;
 }                                   // r_admin_memory
 
