@@ -29,6 +29,7 @@
 #include "transcode.h"
 
 #pragma export(r_admin)
+#pragma export(r_admin_memory)
 
 
 // Local prototypes
