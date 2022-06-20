@@ -310,9 +310,8 @@ R_ADMIN_CTL_T *ra_init_memory(FLAG fDebug)
                }
 
             else
-               log_error(pRACtl->pLog, "No request file specified.");
+               log_error(pRACtl->pLog, "No request file specified."); */
            }
-           */
 
        }
 
