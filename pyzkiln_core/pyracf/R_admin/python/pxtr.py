@@ -186,7 +186,7 @@ class Pxtr:
             rc = self.racf.libracf.r_admin(request_fn, results_fn, f_debug)
 
             if rc != 0:
-                raise r_admin.RadminError(f"Error: Radmin returned return code '{rc}'.")
+                raise r_admin.RadminError(f"Radmin returned return code '{rc}'.")
 
             # Read and parse the results to return to the caller.
             return self.racf.get_results()
@@ -205,7 +205,7 @@ class Pxtr:
             result_json = self.racf.libracf.r_admin_memory(call_parms_pointer, f_debug)
             result_dictionary = json.loads(str(result_json, 'utf-8'))
             if isinstance(result_dictionary, int): 
-                raise r_admin.RadminError(f"Error: Radmin returned return code '{str(result_json, 'utf-8')}'")
+                raise r_admin.RadminError(f"Radmin returned return code '{str(result_json, 'utf-8')}'")
             return result_dictionary
 
 
