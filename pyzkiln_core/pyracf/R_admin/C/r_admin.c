@@ -36,6 +36,7 @@
 int            ra_get_func_type(R_ADMIN_CTL_T *, KV_CTL_T *);
 KV_CTL_T      *ra_run_function(R_ADMIN_CTL_T *, int);
 R_ADMIN_CTL_T *ra_init(char *, char *, FLAG);
+R_ADMIN_CTL_T *ra_init_memory(FLAG);
 R_ADMIN_CTL_T *ra_term(R_ADMIN_CTL_T *);
 
 
@@ -103,7 +104,7 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
 {
    RC rc = SUCCESS;
    //R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
-   R_ADMIN_CTL_T *pRACtl = ra_init_memory(int fDebug);
+   R_ADMIN_CTL_T *pRACtl = ra_init_memory((FLAG)fDebug);
    char *pJson_str_res = NULL;
 
    // Process request
@@ -278,14 +279,14 @@ R_ADMIN_CTL_T *ra_init(char *fnRequest, char *fnResults, FLAG fDebug)
     return pRACtl;
    }                                   // ra_init
 
-R_ADMIN_CTL_T *ra_init_memory(int fDebug)
+R_ADMIN_CTL_T *ra_init_memory(FLAG fDebug)
    {
     R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
 
     if (pRACtl != NULL)
        {
-        pRACtl->fDebug = (FLAG)fDebug;
-        pRACtl->pLog = logger_init((FLAG)fDebug, "R_admin");
+        pRACtl->fDebug = fDebug;
+        pRACtl->pLog = logger_init(fDebug, "R_admin");
 
         if (pRACtl->pLog != NULL)
            {
