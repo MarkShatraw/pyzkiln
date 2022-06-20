@@ -188,7 +188,8 @@ class Pxtr:
             # Read and parse the results to return to the caller.
             return self.racf.get_results()
         else:
-            call_parms = (
+            call_parms = self.radmin.bld_request()
+            call_parms += (
                 '            "func":\n'
                 + json.dumps(self.parms, indent=16) + '\n'
                 + '        }\n'
