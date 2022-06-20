@@ -102,7 +102,6 @@ int r_admin(char *pFile_name_req, char *pFile_name_res, int fDebug)
 
 char* r_admin_memory(char *pJson_str_req, int fDebug)
 {
-   RC rc = SUCCESS;
    //R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
    R_ADMIN_CTL_T *pRACtl = ra_init_memory((FLAG)fDebug);
    char *pJson_str_res = NULL;
@@ -133,13 +132,13 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
       pJson_str_res = json_from_kv(pRACtl->pKVCtl_res, pRACtl->pLog);
       log_set_name(pRACtl->pLog, "R_admin");
    }
-   else
-      rc = FAILURE;
 
    if (pJson_str_req != NULL)
       free(pJson_str_req);
    if (pJson_str_res != NULL)
       free(pJson_str_res);
+      pJson_str_res = malloc(10);
+      strcpy(pJson_str_res, "{\"rc\": 8}")
 
    return pJson_str_res;
 }                                   // r_admin_memory
