@@ -102,7 +102,8 @@ int r_admin(char *pFile_name_req, char *pFile_name_res, int fDebug)
 char* r_admin_memory(char *pJson_str_req, int fDebug)
 {
    RC rc = SUCCESS;
-   R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
+   //R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
+   R_ADMIN_CTL_T *pRACtl = ra_init_memory((FLAG)fDebug);
    char *pJson_str_res = NULL;
 
    // Process request
@@ -140,7 +141,7 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
       free(pJson_str_res);
 
    return pJson_str_res;
-}                                   // r_admin
+}                                   // r_admin_memory
 
 // -----------------------------------------------------------------------
 // Local subroutines
@@ -276,6 +277,51 @@ R_ADMIN_CTL_T *ra_init(char *fnRequest, char *fnResults, FLAG fDebug)
 
     return pRACtl;
    }                                   // ra_init
+
+R_ADMIN_CTL_T *ra_init_memory(FLAG fDebug)
+   {
+    R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
+
+    if (pRACtl != NULL)
+       {
+        pRACtl->fDebug = fDebug;
+        pRACtl->pLog = logger_init(fDebug, "R_admin");
+
+        if (pRACtl->pLog != NULL)
+           {
+            BYTE *pFN = ((BYTE *)pRACtl)+sizeof(R_ADMIN_CTL_T);
+
+            /*
+            // Validate and save the request and results file names.
+            if (fnRequest != NULL)
+               {
+                pRACtl->pFName_req = pFN;
+                strcpy(pRACtl->pFName_req, fnRequest);
+                pFN += strlen(fnRequest);
+
+                if (fnResults != NULL)
+                   {
+                    pRACtl->pFName_res = pFN;
+                    strcpy(pRACtl->pFName_res, fnResults);
+                   }
+
+                else
+                   log_error(pRACtl->pLog, "No results file specified.");
+               }
+
+            else
+               log_error(pRACtl->pLog, "No request file specified.");
+           }
+           */
+
+       }
+
+   if ((pRACtl == NULL) || (pRACtl->pLog == NULL) ||
+       (pRACtl->pFName_req == NULL) || (pRACtl->pFName_res == NULL))
+      pRACtl = ra_term(pRACtl);
+
+    return pRACtl;
+   }                                   // ra_init_memory
 
 R_ADMIN_CTL_T *ra_term(R_ADMIN_CTL_T *pRACtl)
    {
