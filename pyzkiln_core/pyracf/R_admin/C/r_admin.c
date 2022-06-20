@@ -135,8 +135,9 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
    if (pJson_str_req != NULL)
       free(pJson_str_req);
    if (pJson_str_res == NULL)
-      pJson_str_res = malloc(10);
-      strcpy(pJson_str_res, "{\"rc\": 8}");
+      pJson_str_res = malloc(2);
+      strcpy(pJson_str_res, "8");
+
    return pJson_str_res;
 }                                   // r_admin_memory
 
@@ -287,27 +288,6 @@ R_ADMIN_CTL_T *ra_init_memory(FLAG fDebug)
         if (pRACtl->pLog != NULL)
            {
             BYTE *pFN = ((BYTE *)pRACtl)+sizeof(R_ADMIN_CTL_T);
-
-            /*
-            // Validate and save the request and results file names.
-            if (fnRequest != NULL)
-               {
-                pRACtl->pFName_req = pFN;
-                strcpy(pRACtl->pFName_req, fnRequest);
-                pFN += strlen(fnRequest);
-
-                if (fnResults != NULL)
-                   {
-                    pRACtl->pFName_res = pFN;
-                    strcpy(pRACtl->pFName_res, fnResults);
-                   }
-
-                else
-                   log_error(pRACtl->pLog, "No results file specified.");
-               }
-
-            else
-               log_error(pRACtl->pLog, "No request file specified."); */
            }
 
        }
