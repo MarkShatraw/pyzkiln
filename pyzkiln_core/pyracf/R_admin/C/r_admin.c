@@ -316,8 +316,7 @@ R_ADMIN_CTL_T *ra_init_memory(FLAG fDebug)
 
        }
 
-   if ((pRACtl == NULL) || (pRACtl->pLog == NULL) ||
-       (pRACtl->pFName_req == NULL) || (pRACtl->pFName_res == NULL))
+   if ((pRACtl == NULL) || (pRACtl->pLog == NULL))
       pRACtl = ra_term(pRACtl);
 
     return pRACtl;
