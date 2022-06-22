@@ -124,19 +124,20 @@ char* r_admin_memory(char *pJson_str_req, int fDebug)
 
       }
 
+   if (pJson_str_req != NULL)
+      free(pJson_str_req);
+
    // Process response
    if (pRACtl->pKVCtl_res != NULL)
    {
       log_debug(pRACtl->pLog, "Build json for results");
       pJson_str_res = json_from_kv(pRACtl->pKVCtl_res, pRACtl->pLog);
       log_set_name(pRACtl->pLog, "R_admin");
+      return pJson_str_res;
    }
 
-   if (pJson_str_req != NULL)
-      free(pJson_str_req);
-   if (pJson_str_res == NULL)
-      pJson_str_res = malloc(2);
-      strcpy(pJson_str_res, "8");
+   pJson_str_res = malloc(2);
+   strcpy(pJson_str_res, "8");
 
    return pJson_str_res;
 }                                   // r_admin_memory
