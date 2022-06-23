@@ -109,6 +109,9 @@ class Uadmin:
             f_debug = C.c_int(self.racf.get_debug())
             rc = self.racf.libracf.r_admin(request_fn, results_fn, f_debug)
 
+            if rc != 0:
+                raise r_admin.RadminError(f"Radmin returned return code '{rc}'.")
+
             # Read and parse the results to return to the caller.
             return self.racf.get_results()
         else:
