@@ -50,7 +50,7 @@ class Uadmin:
             print('Error - must provide "userid" as dictionary key')
             raise Exception
         self.name = traits['name']
-        self.verify_username(traits['userid'])
+        self.verify_userid(traits['userid'])
         self.userid = traits['userid']
         self.verify_password(password)
         self.password = password
