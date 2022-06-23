@@ -6,9 +6,9 @@
   SPDX-License-Identifier: Apache-2.0
 """
 import json
+import ctypes as C
 import re
 
-import py_racf
 import r_admin
 
 
@@ -71,43 +71,60 @@ class Uadmin:
     def verify_password(self, password):
         pass 
     
-    def run(self):
-        self.racf.log.debug('Uadmin run')
-        self.racf.log.debug('    Call data file: %s' %
-                            (self.racf.request_df.get_name()))
-        self.racf.log.debug('    Return data file: %s' %
-                            (self.racf.results_df.get_name()))
+    def run(self, memory_only=False):
+        if not memory_only:
+            self.racf.log.debug('Uadmin run')
+            self.racf.log.debug('    Call data file: %s' %
+                                (self.racf.request_df.get_name()))
+            self.racf.log.debug('    Return data file: %s' %
+                                (self.racf.results_df.get_name()))
 
-        # Collect any parms from the parent function (R_admin) that the user
-        # may have set, and assemble them into the input parameter json file
-        # that gets passed to the C code.
-        call_parms = self.radmin.bld_request()
-        call_parms = call_parms + '            "func":\n'
-        call_parms = call_parms + json.dumps(self.traits, indent=16) + '\n'
-        call_parms = call_parms + '        }\n'
-        call_parms = call_parms + '    }\n'
-        call_parms = call_parms + '}\n'
-        self.racf.log.debug('    parms built, write to %s' %
-                            (self.racf.request_df.get_name()))
-# Write the parms to the request data file.  We're using this like a
-        # pipe, but are using a regular file instead to avoid inherent
-        # limitations on the length of data being passed.  Requests to RACF
-        # aren't generally that long, but results from RACF can be very verbose.
-        self.racf.request_df.open('w')
-        self.racf.request_df.write(call_parms)
-        self.racf.request_df.close()
+            # Collect any parms from the parent function (R_admin) that the user
+            # may have set, and assemble them into the input parameter json file
+            # that gets passed to the C code.
+            call_parms = self.radmin.bld_request()
+            call_parms = call_parms + '            "func":\n'
+            call_parms = call_parms + json.dumps(self.parms, indent=16) + '\n'
+            call_parms = call_parms + '        }\n'
+            call_parms = call_parms + '    }\n'
+            call_parms = call_parms + '}\n'
+            self.racf.log.debug('    parms built, write to %s' %
+                                (self.racf.request_df.get_name()))
+            # Write the parms to the request data file.  We're using this like a
+            # pipe, but are using a regular file instead to avoid inherent
+            # limitations on the length of data being passed.  Requests to RACF
+            # aren't generally that long, but results from RACF can be very verbose.
+            self.racf.request_df.open('w')
+            self.racf.request_df.write(call_parms)
+            self.racf.request_df.close()
 
-        # Call the C interface to the profile extract function of the R_admin
-        # service.  Pass in the name of the request and results files.
-        self.racf.libracf.r_admin.restype = C.c_int
-        self.racf.libracf.r_admin.argtypes = [C.c_char_p, C.c_char_p, C.c_int]
-        request_fn = C.c_char_p(bytes(self.racf.request_df.get_name(),
-                                'ISO8859-1'))
-        results_fn = C.c_char_p(bytes(self.racf.results_df.get_name(),
-                                'ISO8859-1'))
-        f_debug = C.c_int(self.racf.get_debug())
-        rc = self.racf.libracf.r_admin(request_fn, results_fn, f_debug)
+            # Call the C interface to the profile extract function of the R_admin
+            # service.  Pass in the name of the request and results files.
+            self.racf.libracf.r_admin.restype = C.c_int
+            self.racf.libracf.r_admin.argtypes = [C.c_char_p, C.c_char_p, C.c_int]
+            request_fn = C.c_char_p(bytes(self.racf.request_df.get_name(),
+                                    'ISO8859-1'))
+            results_fn = C.c_char_p(bytes(self.racf.results_df.get_name(),
+                                    'ISO8859-1'))
+            f_debug = C.c_int(self.racf.get_debug())
+            rc = self.racf.libracf.r_admin(request_fn, results_fn, f_debug)
 
-        # Read and parse the results to return to the caller.
-        return self.racf.get_results()
-
+            # Read and parse the results to return to the caller.
+            return self.racf.get_results()
+        else:
+            call_parms = self.radmin.bld_request()
+            call_parms += (
+                '            "func":\n'
+                + json.dumps(self.parms, indent=16) + '\n'
+                + '        }\n'
+                + '    }\n'
+                + '}\n'
+            )
+            self.racf.libracf.r_admin_memory.restype = C.c_char_p
+            call_parms_pointer = C.create_string_buffer(bytes(call_parms, 'utf-8'), len(call_parms))
+            f_debug = C.c_int(self.racf.get_debug())
+            result_json = self.racf.libracf.r_admin_memory(call_parms_pointer, f_debug)
+            result_dictionary = json.loads(str(result_json, 'utf-8'))
+            if isinstance(result_dictionary, int): 
+                raise r_admin.RadminError(f"Radmin returned return code '{str(result_json, 'utf-8')}'")
+            return result_dictionary
