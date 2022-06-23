@@ -29,12 +29,14 @@
 #include "transcode.h"
 
 #pragma export(r_admin)
+#pragma export(r_admin_memory)
 
 
 // Local prototypes
 int            ra_get_func_type(R_ADMIN_CTL_T *, KV_CTL_T *);
 KV_CTL_T      *ra_run_function(R_ADMIN_CTL_T *, int);
 R_ADMIN_CTL_T *ra_init(char *, char *, FLAG);
+R_ADMIN_CTL_T *ra_init_memory(FLAG);
 R_ADMIN_CTL_T *ra_term(R_ADMIN_CTL_T *);
 
 
@@ -98,6 +100,47 @@ int r_admin(char *pFile_name_req, char *pFile_name_res, int fDebug)
     return (int)rc;
    }                                   // r_admin
 
+char* r_admin_memory(char *pJson_str_req, int fDebug)
+{
+   R_ADMIN_CTL_T *pRACtl = ra_init_memory((FLAG)fDebug);
+   char *pJson_str_res = NULL;
+
+   // Process request
+   log_debug(pRACtl->pLog, "Build key-value list for request");
+   pRACtl->pKVCtl_req = json_to_kv(pJson_str_req, pRACtl->pLog);
+   log_set_name(pRACtl->pLog, "R_admin");
+
+   if (pRACtl->pKVCtl_req != NULL)
+      {
+         // kv_print(pRACtl->pKVCtl_req);
+         log_debug(pRACtl->pLog, "Get the function type requested");
+         pRACtl->iFunc_type = ra_get_func_type(pRACtl, pRACtl->pKVCtl_req);
+
+         if (pRACtl->iFunc_type > ADMIN_FUNC_NONE)
+         {
+            log_debug(pRACtl->pLog, "Perform RACF runction");
+            pRACtl->pKVCtl_res = ra_run_function(pRACtl, pRACtl->iFunc_type);
+         }
+
+      }
+
+   if (pJson_str_req != NULL)
+      free(pJson_str_req);
+
+   // Process response
+   if (pRACtl->pKVCtl_res != NULL)
+   {
+      log_debug(pRACtl->pLog, "Build json for results");
+      pJson_str_res = json_from_kv(pRACtl->pKVCtl_res, pRACtl->pLog);
+      log_set_name(pRACtl->pLog, "R_admin");
+      return pJson_str_res;
+   }
+
+   pJson_str_res = malloc(2);
+   strcpy(pJson_str_res, "8");
+
+   return pJson_str_res;
+}                                   // r_admin_memory
 
 // -----------------------------------------------------------------------
 // Local subroutines
@@ -233,6 +276,28 @@ R_ADMIN_CTL_T *ra_init(char *fnRequest, char *fnResults, FLAG fDebug)
 
     return pRACtl;
    }                                   // ra_init
+
+R_ADMIN_CTL_T *ra_init_memory(FLAG fDebug)
+   {
+    R_ADMIN_CTL_T *pRACtl = calloc(1, sizeof(R_ADMIN_CTL_T));
+
+    if (pRACtl != NULL)
+       {
+        pRACtl->fDebug = fDebug;
+        pRACtl->pLog = logger_init(fDebug, "R_admin");
+
+        if (pRACtl->pLog != NULL)
+           {
+            BYTE *pFN = ((BYTE *)pRACtl)+sizeof(R_ADMIN_CTL_T);
+           }
+
+       }
+
+   if ((pRACtl == NULL) || (pRACtl->pLog == NULL))
+      pRACtl = ra_term(pRACtl);
+
+    return pRACtl;
+   }                                   // ra_init_memory
 
 R_ADMIN_CTL_T *ra_term(R_ADMIN_CTL_T *pRACtl)
    {

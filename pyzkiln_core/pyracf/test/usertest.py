@@ -24,6 +24,8 @@ if __name__ == '__main__':
     traits['userid'] = 'user1'
     password = 'password'
     racf.svc.func.set_user_traits(traits, password)
+    bubba = racf.svc.func.run(memory_only=True)
+    pprint.pprint(bubba)
     # racf.term()
     # del(racf)
 

@@ -20,7 +20,7 @@ if __name__ == '__main__':
     racf.init_svc(py_racf.R_ADMIN)
     racf.svc.init_func(ADMIN_XTR_USER)
     racf.svc.func.set_prof_name('BOSTIAN')
-    bubba = racf.svc.func.run()
+    bubba = racf.svc.func.run(memory_only=True)
     pprint.pprint(bubba)
     # racf.term()
     # del(racf)

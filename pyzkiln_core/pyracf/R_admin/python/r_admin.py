@@ -88,6 +88,14 @@ ADMIN_XTR_DATASET = 0x22         # Extr a dataset profile
 ADMIN_XTR_NEXT_DATASET = 0x23    # Extr the next dataset profile
 
 
+# Use for Radmin specific exceptions
+class RadminError(Exception):
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return self.message
+
+
 # Radmin - the main R_admin class
 #
 # This routed control to the specific R_admin function requested.
