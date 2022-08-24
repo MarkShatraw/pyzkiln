@@ -9,6 +9,7 @@ import json
 import re
 
 import py_racf
+import ctypes as C
 import r_admin
 
 
@@ -32,6 +33,7 @@ class Uadmin:
         self.set_function(func_type)
         self.racf.log.debug('Uadmin init')
         if self.func_type is not None:
+            self.func_type = func_type
             self.racf.log.debug('    func_type: (0x%02x)' % self.func_type)
         return
 
@@ -49,8 +51,12 @@ class Uadmin:
         if 'userid' not in traits:
             print('Error - must provide "userid" as dictionary key')
             raise Exception
+        self.parms['func_type'] = self.func_type
+        self.parms['prof_name'] = traits['name']
+        self.parms['class_name'] = ''
+        self.parms['flags'] = 0x00000000
         self.name = traits['name']
-        self.verify_username(traits['userid'])
+        self.verify_userid(traits['userid'])
         self.userid = traits['userid']
         self.verify_password(password)
         self.password = password
@@ -83,7 +89,7 @@ class Uadmin:
         # that gets passed to the C code.
         call_parms = self.radmin.bld_request()
         call_parms = call_parms + '            "func":\n'
-        call_parms = call_parms + json.dumps(self.traits, indent=16) + '\n'
+        call_parms = call_parms + json.dumps(self.parms, indent=16) + '\n'
         call_parms = call_parms + '        }\n'
         call_parms = call_parms + '    }\n'
         call_parms = call_parms + '}\n'
