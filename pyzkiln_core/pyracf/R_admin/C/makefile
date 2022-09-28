@@ -18,7 +18,7 @@ CARGS=-c -Wc,"LANGLVL(EXTENDED),SSCOMM,XPLINK,LP64,ASCII,GOFF"
 MAIN_CARGS= -Wc,"CSECT(r_admin)" 
 INCS=-I. -I$(BASE)/R_admin/C/pxtr -I$(BASE)/common/C
 
-all: start $(MAIN_OBJ) pxtr_func build_archive
+all: start $(MAIN_OBJ) pxtr_func uadmin_func build_archive
 
 start:
 	@echo "--- Make r_admin service"
@@ -30,6 +30,9 @@ $(DEPS):
 
 pxtr_func:
 	@$(MAKE) -c $(BASE)/R_admin/C/pxtr all
+
+uadmin_func:
+	@$(MAKE) -c $(BASE)/R_admin/C/uadmin all
 
 build_archive:
 	# Get the common utility methods to include here.

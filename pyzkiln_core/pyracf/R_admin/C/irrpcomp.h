@@ -85,14 +85,14 @@ const BYTE ADMIN_XTR_NEXT_RESOURCE = 0x20;  // extract the next general resource
 //    - ADMIN_XTR_PPENV
 //    - ADMIN_XTR_PWENV
 // This struct is exactly 14 bytes long.
-typedef struct R_ADMIN_UADM_PARMS {
+typedef struct R_ADMIN_UADMIN_PARMS {
    BYTE   l_userid;              // length of the userid
    char   userid[8];             // upper case userid
    BYTE   rsv_1;                 // reserved
    USHORT off_seg_1;             // offset to first segment
    USHORT n_segs;                // number of segments
                                  // start of first segment
-   } R_ADMIN_UADM_PARMS_T;
+   } R_ADMIN_UADMIN_PARMS_T;
 
 
 // -----------------------------------------------------------------------------
