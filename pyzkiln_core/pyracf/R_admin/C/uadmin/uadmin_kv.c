@@ -45,6 +45,7 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 //
 RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_T *pKV, LOGGER_T *pLog)
    {    
+      log_debug(pLog, "Start kv to segments.");
       RC rc = SUCCESS;
       //
       // Extract "userid" and "name" from key-value data structure.
