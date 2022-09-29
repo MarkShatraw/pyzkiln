@@ -49,6 +49,7 @@ class Uadmin:
         if 'userid' not in traits:
             print('Error - must provide "userid" as dictionary key')
             raise Exception
+        traits['func_type'] = self.func_type
         self.name = traits['name']
         self.verify_userid(traits['userid'])
         self.userid = traits['userid']
