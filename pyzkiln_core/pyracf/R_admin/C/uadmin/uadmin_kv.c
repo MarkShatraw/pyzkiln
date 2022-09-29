@@ -44,7 +44,39 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 // Mainline code
 //
 void uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_T *pKV, LOGGER_T *pLog)
-   {         
+   {    
+      RC rc = SUCCESS;
+      //
+      // Extract "userid" and "name" from key-value data structure.
+      //
+      pKV = pKV->pNext; // move to "f_debug" field
+      pKV = pKV->pNext; // move to "svc" field
+      pKV = pKV->pNext; // move to "svc" type field
+      pKV = pKV->pNext; // move to "func" field
+      pKV = pKV->pNext; // move to "name" field
+      KVV_T *pKVVal = pKV->pKVVal_head;
+      char *name = pKVVal->pVal;
+      int l_name = pKVVal->lVal;
+      pKV = pKV->pNext; // move to "userid" field
+      pKVVal = pKV->pKVVal_head;
+      char *userid = pKVVal->pVal;
+      int l_userid = pKVVal->lVal;
+
+      //
+      // Build Request Header
+      //
+      char EBC_userid[l_userid];
+      memset(&(EBC_userid[0]), 0, l_userid);
+      rc = tc_a2e(userid, &(EBC_userid[0]), l_userid, pLog);
+      if (rc == SUCCESS) {
+         log_debug(pLog, "Userid folded, converted to EBCDIC.");
+         memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
+         p_uadmin_parms->l_userid = l_userid;
+      }
+      else {
+         log_error(pUADMINCtl->pLog, "Unable to convert userid to EBCDIC.");
+         return FAILURE;
+      }
       uadmin_print(p_uadmin_parms, pLog);
       /*
       BYTE p_segments = (BYTE *)p_uadmin_parms + sizeof(R_ADMIN_UADMIN_PARMS_T);
