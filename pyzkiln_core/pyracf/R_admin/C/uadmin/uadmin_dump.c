@@ -49,7 +49,7 @@ void uadmin_print(R_ADMIN_UADMIN_PARMS_T *pParms, LOGGER_T *pLog)
     // The segments start at the end of R_ADMIN_UADMIN_PARMS_T.
     finger = (BYTE *)pParms + sizeof(R_ADMIN_UADMIN_PARMS_T);
 
-    uadmin_print_segments((R_ADMIN_SDESC_T *)finger, pParms->nSegments, (BYTE *)pParms, pLog);
+    uadmin_print_segments((R_ADMIN_SDESC_T *)finger, pParms->n_segs, (BYTE *)pParms, pLog);
    }                                   // uadmin_print_output
 
 void uadmin_print_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, BYTE *pParms, LOGGER_T *pLog)
@@ -161,40 +161,20 @@ void uadmin_print_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, BYTE *pParms, LO
 // complete unformatted view of the output from R_admin.
 void uadmin_dump(R_ADMIN_UADMIN_PARMS_T *pParms, LOGGER_T *pLog)
    {                                   // uadmin_dump_output
-    char eyecatcher[5];                // vars for null-terminating strings
-    char class_name[9];
-    PROF_NAME_T prof_name;
     BYTE *finger;                      // current memory location
 
-    memset(eyecatcher, 0, sizeof(eyecatcher));
-    strncpy(eyecatcher, pParms->eyecatcher, sizeof(pParms->eyecatcher));
-    memset(class_name, 0, sizeof(class_name));
-    strncpy(class_name, pParms->class_name, sizeof(pParms->class_name));
-
-    log_debug(pLog, "Profile extract parms (%08x)", pParms);
-    log_debug(pLog, "   +0 eyecatcher:   %s",eyecatcher);
-    log_debug(pLog, "   +4 lOutbuf:     %d",pParms->lOutbuf);
-    log_debug(pLog, "   +8 subpool:      %d",pParms->subpool);
-    log_debug(pLog, "   +9 version:      %d",pParms->version);
-    log_debug(pLog, "   +A reserved");
-    log_debug(pLog, "   +C class_name:   %s",class_name);
-    log_debug(pLog, "  +14 lProf_name:   %d",pParms->lProf_name);
-    log_debug(pLog, "  +18 reserved");
-    log_debug(pLog, "  +20 reserved");
-    log_debug(pLog, "  +24 flags:        %08x",pParms->flags);
-    log_debug(pLog, "  +28 nSegments:   %0d",pParms->nSegments);
-    log_debug(pLog, "  +2C reserved");
-
-    finger = (BYTE *)pParms + sizeof(R_ADMIN_UADMIN_PARMS_T);
-    memset(&prof_name, 0, sizeof(PROF_NAME_T));
-    strncpy((&prof_name)->name, finger, pParms->lProf_name);
-    log_debug(pLog, "  +3C profile name: |%s|\n",prof_name.name);
+    log_debug(pLog, "User administration parms (%08x)", pParms);
+    log_debug(pLog, "  +0 l_userid:   %d",pParms->l_userid);
+    log_debug(pLog, "  +1 userid:   %s",pParms->userid);
+    log_debug(pLog, "  +9 reserved");
+    log_debug(pLog, "  +10 off_seg_1:   %d",pParms->off_seg_1);
+    log_debug(pLog, "  +12 n_segs:   %d",pParms->n_segs);
 
     dump_mem(pParms, 80, CCSID_EBCDIC, pLog);
 
     // Print all of the segments and associated fields.
-    // finger += pParms->lProf_name;
-    // uadmin_dump_segments((R_ADMIN_SDESC_T	*)finger, pParms->nSegments, pLog);
+    finger = (BYTE *)pParms + sizeof(R_ADMIN_UADMIN_PARMS_T);
+    uadmin_dump_segments((R_ADMIN_SDESC_T	*)finger, pParms->n_segs, pLog);
    }                                   // uadmin_dump_output
 
 void uadmin_dump_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, LOGGER_T *pLog)
