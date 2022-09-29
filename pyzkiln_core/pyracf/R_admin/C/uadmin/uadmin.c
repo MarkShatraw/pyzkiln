@@ -179,9 +179,15 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         tc_a2e("UADMIN", &(EBC_eyecatcher[0]), sizeof(EBC_eyecatcher), pUADMINCtl->pLog);
         memcpy(p31->args.uadmin_parms.eyecatcher, EBC_eyecatcher, sizeof(EBC_eyecatcher));
 
+        // dump the json and the kv structure
+        kv_print(pKVCtl_req);
+        return 0;
+
          //pUADMINCtl
          //p31->args+sizeof(R_ADMIN_UADMIN_PARMS_T)
-        uadmin_kv_to_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, LOGGER_T *pLog)
+        //uadmin_kv_to_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, LOGGER_T *pLog)
+
+
         /*
         // The name of the profile to extract.
         pKV = kv_get(pKVCtl_req, pKV, "prof_name", 1, KEY_REQUIRED);
