@@ -26,6 +26,8 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
+void uadmin_kv_to_segments(R_ADMIN_SDESC_T *, int, LOGGER_T *);
+void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
 RC key_val_to_kv(KV_CTL_T *, BYTE *, int, CCSID, BYTE *, int, CCSID);
