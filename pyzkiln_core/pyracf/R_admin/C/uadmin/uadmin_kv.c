@@ -57,10 +57,12 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_T *pKV, LOGG
       KVV_T *pKVVal = pKV->pKVVal_head;
       char *name = pKVVal->pVal;
       int l_name = pKVVal->lVal;
+      log_debug(pLog, "name: %s", name);
       pKV = pKV->pNext; // move to "userid" field
       pKVVal = pKV->pKVVal_head;
       char *userid = pKVVal->pVal;
       int l_userid = pKVVal->lVal;
+      log_debug(pLog, "userid: %s", userid);
 
       //
       // Build Request Header
