@@ -76,7 +76,7 @@ KV_CTL_T *uadmin_run(R_ADMIN_CTL_T *pRACtl, LOGGER_T *pLog)
                 // dump_mem((BYTE *)p31->args.pOutbuf, sizeof(R_ADMIN_UADMIN_PARMS_T)+32,
                 //          CCSID_EBCDIC, pRACtl->pLog);
                 pKVCtl_res = results_to_kv(pUADMINCtl, (R_ADMIN_UADMIN_PARMS_T *)p31->args.pOutbuf);
-                log_set_name(pUADMINSCtl->pLog, "uadmin");
+                log_set_name(pUADMINCtl->pLog, "uadmin");
                }
 
             else
@@ -176,8 +176,8 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         p31->args.ACEE           = ACEE;
         p31->args.outbuf_subpool = OUTBUF_SUBPOOL;
 
-        tc_a2e("UADMIN", &(EBC_eyecatcher[0]), sizeof(EBC_eyecatcher), pUADMINCtl->pLog);
-        memcpy(p31->args.uadmin_parms.eyecatcher, EBC_eyecatcher, sizeof(EBC_eyecatcher));
+        //tc_a2e("UADMIN", &(EBC_eyecatcher[0]), sizeof(EBC_eyecatcher), pUADMINCtl->pLog);
+        //memcpy(p31->args.uadmin_parms.eyecatcher, EBC_eyecatcher, sizeof(EBC_eyecatcher));
 
         // dump the json and the kv structure
         kv_print(pKVCtl_req);
@@ -246,7 +246,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
 
         p31->arg_list.pFunc_code = &(p31->args.func_code);
         p31->arg_list.pUADMIN_parms = &(p31->args.uadmin_parms);
-        p31->arg_list.pProf_name = &(p31->args.prof_name.name[0]);
+        //p31->arg_list.pProf_name = &(p31->args.prof_name.name[0]);
         p31->arg_list.pACEE = &(p31->args.ACEE);
         p31->arg_list.pOutbuf_subpool = &(p31->args.outbuf_subpool);
         p31->arg_list.ppOutbuf = &(p31->args.pOutbuf);
