@@ -74,7 +74,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_T *pKV, LOGG
          p_uadmin_parms->l_userid = l_userid;
       }
       else {
-         log_error(pUADMINCtl->pLog, "Unable to convert userid to EBCDIC.");
+         log_error(pLog, "Unable to convert userid to EBCDIC.");
          return FAILURE;
       }
       uadmin_print(p_uadmin_parms, pLog);
