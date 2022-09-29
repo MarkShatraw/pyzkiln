@@ -46,3 +46,6 @@ venv.bak/
 
 # Mac/OSX
 .DS_Store
+
+# VSCode
+.vscode

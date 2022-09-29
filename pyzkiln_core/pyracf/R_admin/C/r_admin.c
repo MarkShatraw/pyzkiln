@@ -23,6 +23,7 @@
 
 #include "r_admin.h"
 #include "pxtr.h"
+#include "uadmin.h"
 #include "keyval.h"
 #include "json.h"
 #include "fileio.h"
@@ -154,7 +155,8 @@ KV_CTL_T *ra_run_function(R_ADMIN_CTL_T *pRACtl, int iFunc_type)
         ((pRACtl->iFunc_type >= ADMIN_ADD_GROUP) && (pRACtl->iFunc_type <= ADMIN_ALT_SETR)))
        {
         pRACtl->iFunc_grp = ADMIN_GRP_UPDATE;
-        // rc = update_main(iFunc_type, profile_name, &ractl);
+        log_debug(pRACtl->pLog, "Calling uadmin_run, iFunc_type: %d", pRACtl->iFunc_type);
+        pKVCtl_res = uadmin_run(pRACtl, pRACtl->pLog);
        }
 
     else if (((pRACtl->iFunc_type >= ADMIN_XTR_USER) && (pRACtl->iFunc_type <= ADMIN_XTR_CONNECT)) ||
