@@ -179,8 +179,9 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         //tc_a2e("UADMIN", &(EBC_eyecatcher[0]), sizeof(EBC_eyecatcher), pUADMINCtl->pLog);
         //memcpy(p31->args.uadmin_parms.eyecatcher, EBC_eyecatcher, sizeof(EBC_eyecatcher));
 
-        // dump the json and the kv structure
+        // Dump key value structure
         kv_print(pKVCtl_req);
+        uadmin_kv_to_segments(p31->args.uadmin_parms, pKV, pUADMINCtl->pLog)
         return 0;
 
          //pUADMINCtl

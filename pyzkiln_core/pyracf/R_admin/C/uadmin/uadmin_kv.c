@@ -26,7 +26,7 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
-void uadmin_kv_to_segments(R_ADMIN_SDESC_T *, int, LOGGER_T *);
+void uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *, KV_T *, LOGGER_T *);
 void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -43,8 +43,11 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 //
 // Mainline code
 //
-void uadmin_kv_to_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, LOGGER_T *pLog)
-   {                                   // uadmin_dump_segments
+void uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_T *pKV, LOGGER_T *pLog)
+   {         
+      uadmin_print(p_uadmin_parms, pLog)
+      /*
+      BYTE p_segments = (BYTE *)p_uadmin_parms + sizeof(R_ADMIN_UADMIN_PARMS_T);
     int i_seg = 1;
     char seg_name[9];                  // var for null-terminating strings
     R_ADMIN_SDESC_T *p_seg = p_sdesc;
@@ -75,6 +78,7 @@ void uadmin_kv_to_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, LOGGER_T *pL
        i_seg++;
        p_seg++;
       }
+      */
 
    }                                   // uadmin_dump_segments
 
