@@ -12,7 +12,7 @@ RM=rm -f
 CP=cp
 
 # Global arguments
-CARGS=-c -Wc,"LANGLVL(EXTENDED),SSCOMM,XPLINK,LP64,ASCII,GOFF"
+CARGS=-c -Wc,"LANGLVL(EXTENDED),SSCOMM,XPLINK,LP64,ASCII,GOFF" -g
 INCS=-I. -I$(BASE)/R_admin/C -I$(BASE)/common/C
 
 all: start $(OBJS) copy_objs
