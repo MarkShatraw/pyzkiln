@@ -181,7 +181,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
 
         // Dump key value structure
         kv_print(pKVCtl_req);
-        uadmin_kv_to_segments((R_ADMIN_UADMIN_PARMS_T *)p31->args.uadmin_parms, pKV, pUADMINCtl->pLog);
+        uadmin_kv_to_segments((R_ADMIN_UADMIN_PARMS_T *)p31->args.uadmin_parms, (KV_T *)pKV, (LOGGER_T *)pUADMINCtl->pLog);
         return 0;
 
          //pUADMINCtl
