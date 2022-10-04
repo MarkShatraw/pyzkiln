@@ -89,6 +89,7 @@ typedef struct UADMIN_CTL {
 KV_CTL_T *uadmin_run(R_ADMIN_CTL_T *, LOGGER_T *);
 
 // User administration to key-value list.
+RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *, KV_T *, LOGGER_T *);
 KV_CTL_T *results_to_kv(UADMIN_CTL_T *, R_ADMIN_UADMIN_PARMS_T *);
 
 // User administration dump methods.

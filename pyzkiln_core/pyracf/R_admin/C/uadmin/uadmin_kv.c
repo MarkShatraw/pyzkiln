@@ -26,7 +26,6 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
-RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *, KV_T *, LOGGER_T *);
 void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -155,7 +154,7 @@ void uadmin_kv_to_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, LOGGER_T *pLog)
 
    }
 
-/*
+
 KV_CTL_T *results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMIN_results)
    {
     KV_CTL_T *pKVCtl = uadmin_kv_init(pUADMINCtl->pLog);
@@ -219,7 +218,7 @@ KV_CTL_T *results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMI
        pKVCtl = uadmin_kv_term(pKVCtl);
     return pKVCtl;
    }                                   // results_to_kv
-*/
+
 
 
 KV_CTL_T *uadmin_kv_init(LOGGER_T *pLog)
