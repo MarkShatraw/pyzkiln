@@ -159,7 +159,7 @@ KV_CTL_T *results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMI
    {
     KV_CTL_T *pKVCtl = uadmin_kv_init(pUADMINCtl->pLog);
     RC rc = SUCCESS;
-
+   /*
     if (pKVCtl != NULL)
        {
         BYTE *pResults = (BYTE *)pUADMIN_results + sizeof(R_ADMIN_UADMIN_PARMS_T);
@@ -213,11 +213,12 @@ KV_CTL_T *results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMI
 
     else
        rc = FAILURE;
-
     if (rc != SUCCESS)
        pKVCtl = uadmin_kv_term(pKVCtl);
+   */
     return pKVCtl;
    }                                   // results_to_kv
+
 
 
 
