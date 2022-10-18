@@ -49,7 +49,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
       RC rc = SUCCESS;
       // extract userid
       KV_T *pKV = kv_get_list(pKVCtl_req);
-      KV_T *useridKV = kv_get(pKVCtl_req, pKV, "name", pKVCtl_req.lKV_list, KEY_REQUIRED);
+      KV_T *useridKV = kv_get(pKVCtl_req, pKV, "name", pKVCtl_req->lKV_list, KEY_REQUIRED);
       KVV_T *useridpKVVal = useridKV->pKVVal_head;
       char *userid = useridpKVVal->pVal;
       int l_userid = useridpKVVal->lVal;
