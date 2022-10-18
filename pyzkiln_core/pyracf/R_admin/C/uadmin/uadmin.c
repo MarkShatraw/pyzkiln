@@ -184,7 +184,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         printf((R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms));
         printf((KV_T *)pKV); 
         printf((LOGGER_T *)pUADMINCtl->pLog);
-        uadmin_kv_to_segments((R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), (KV_CTL_T *)pKVCTL_req, (LOGGER_T *)pUADMINCtl->pLog);
+        uadmin_kv_to_segments((R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), (KV_CTL_T *)pKVCtl_req, (LOGGER_T *)pUADMINCtl->pLog);
         return 0;
 
          //pUADMINCtl

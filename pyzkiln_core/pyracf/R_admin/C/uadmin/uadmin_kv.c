@@ -43,13 +43,13 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 //
 // Mainline code
 //
-RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCTL_req, LOGGER_T *pLog)
+RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCtl_req, LOGGER_T *pLog)
    {    
       log_debug(pLog, "Start kv to segments.");
       RC rc = SUCCESS;
       // extract userid
-      KV_T *pKV = kv_get_list(pKVCTL_req);
-      KV_T *useridKV = kv_get(pKVCTL_req, pKV, "name", pKVCTL_req.lKV_LIST, KEY_REQUIRED);
+      KV_T *pKV = kv_get_list(pKVCtl_req);
+      KV_T *useridKV = kv_get(pKVCtl_req, pKV, "name", pKVCTL_req.lKV_LIST, KEY_REQUIRED);
       KVV_T *useridpKVVal = useridKV->pKVVal_head;
       char *userid = useridpKVVal->pVal;
       int l_userid = useridpKVVal->lVal;
