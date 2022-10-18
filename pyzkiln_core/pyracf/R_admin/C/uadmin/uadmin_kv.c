@@ -26,7 +26,7 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
-RC convert_to_ebcdic(char *, char *, char *, int, LOGGER_T *);
+RC convert_to_ebcdic(char *, char *, char[], int, LOGGER_T *);
 void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -72,7 +72,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
       return SUCCESS;
    }                                   // uadmin_dump_segments
 
-RC convert_to_ebcdic(char *name, char *ascii_string, char *ebcdic_buffer, int l_string, LOGGER_T *pLog) {
+RC convert_to_ebcdic(char *name, char *ascii_string, char ebcdic_buffer[], int l_string, LOGGER_T *pLog) {
    memset(&(ebcdic_buffer[0]), 0, l_string);
    RC rc = tc_a2e(ascii_string, &(ebcdic_buffer[0]), l_string, pLog);
    if (rc == SUCCESS) {
