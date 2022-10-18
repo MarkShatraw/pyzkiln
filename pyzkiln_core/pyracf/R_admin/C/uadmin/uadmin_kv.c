@@ -55,19 +55,32 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
       int l_userid = useridpKVVal->lVal;
       log_debug(pLog, "userid: %s", userid);
 
-      // create typedef for BASE segment could be arary or whatever
+      int n_segs = 0;
 
-      // create typedef for OMVS segment could be array or whatever
+      // Get BASE segment fields.
+      KV_T *nameKV = kv_get(pKVCtl_req, pKV, "name", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+      KV_T *ownerKV = kv_get(pKVCtl_req, pKV, "owner", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+      KV_T *specialKV = kv_get(pKVCtl_req, pKV, "special", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+      if (nameKV != NULL || ownerKV != NULL || specialKV != NULL) {
+         n_segs++;
+      }
 
-      //
+      // Get OMVS segment fields.
+      KV_T *uidKV = kv_get(pKVCtl_req, pKV, "uid", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+      KV_T *homeKV = kv_get(pKVCtl_req, pKV, "home", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+      KV_T *programKV = kv_get(pKVCtl_req, pKV, "program", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+      if (uidKV != NULL || homeKV != NULL || programKV != NULL) {
+         n_segs++;
+      }
+
       // Build Request Header
-      //
       char EBC_userid[l_userid];
       rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
       if (rc == FAILURE)
          return rc;
       memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
       p_uadmin_parms->l_userid = l_userid;
+      p_uadmin_parms->n_segs = n_segs;
       uadmin_print(p_uadmin_parms, pLog);
       return SUCCESS;
    }                                   // uadmin_dump_segments
