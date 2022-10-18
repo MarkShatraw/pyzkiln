@@ -26,7 +26,7 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
-convert_to_ebcdic(char *, char *, char *, int, LOGGER_T *);
+RC convert_to_ebcdic(char *, char *, char *, int, LOGGER_T *);
 void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -49,7 +49,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
       RC rc = SUCCESS;
       // extract userid
       KV_T *pKV = kv_get_list(pKVCtl_req);
-      KV_T *useridKV = kv_get(pKVCtl_req, pKV, "name", pKVCTL_req.lKV_LIST, KEY_REQUIRED);
+      KV_T *useridKV = kv_get(pKVCtl_req, pKV, "name", pKVCtl_req.lKV_LIST, KEY_REQUIRED);
       KVV_T *useridpKVVal = useridKV->pKVVal_head;
       char *userid = useridpKVVal->pVal;
       int l_userid = useridpKVVal->lVal;
@@ -74,7 +74,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
 
 RC convert_to_ebcdic(char *name, char *ascii_string, char *ebcdic_buffer, int l_string, LOGGER_T *pLog) {
    memset(&(ebcdic_buffer[0]), 0, l_string);
-   rc = tc_a2e(ascii_string, &(ebcdic_buffer[0]), l_string, pLog);
+   RC rc = tc_a2e(ascii_string, &(ebcdic_buffer[0]), l_string, pLog);
    if (rc == SUCCESS) {
       log_debug(pLog, "%s folded, converted to EBCDIC.", name);
    }
