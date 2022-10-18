@@ -26,6 +26,7 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
+convert_to_ebcdic(char *, char *, char *, int, LOGGER_T *);
 void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -42,80 +43,47 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 //
 // Mainline code
 //
-RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_T *pKV, LOGGER_T *pLog)
+RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCTL_req, LOGGER_T *pLog)
    {    
       log_debug(pLog, "Start kv to segments.");
       RC rc = SUCCESS;
-      //
-      // Extract "userid" and "name" from key-value data structure.
-      //
-      pKV = pKV->pNext; // move to "f_debug" field
-      pKV = pKV->pNext; // move to "svc" field
-      pKV = pKV->pNext; // move to "svc" type field
-      pKV = pKV->pNext; // move to "func" field
-      pKV = pKV->pNext; // move to "name" field
-      KVV_T *pKVVal = pKV->pKVVal_head;
-      char *name = pKVVal->pVal;
-      int l_name = pKVVal->lVal;
-      log_debug(pLog, "name: %s", name);
-      pKV = pKV->pNext; // move to "userid" field
-      pKVVal = pKV->pKVVal_head;
-      char *userid = pKVVal->pVal;
-      int l_userid = pKVVal->lVal;
+      // extract userid
+      KV_T *pKV = kv_get_list(pKVCTL_req);
+      KV_T *useridKV = kv_get(pKVCTL_req, pKV, "name", pKVCTL_req.lKV_LIST, KEY_REQUIRED);
+      KVV_T *useridpKVVal = useridKV->pKVVal_head;
+      char *userid = useridpKVVal->pVal;
+      int l_userid = useridpKVVal->lVal;
       log_debug(pLog, "userid: %s", userid);
+
+      // create typedef for BASE segment could be arary or whatever
+
+      // create typedef for OMVS segment could be array or whatever
 
       //
       // Build Request Header
       //
       char EBC_userid[l_userid];
-      memset(&(EBC_userid[0]), 0, l_userid);
-      rc = tc_a2e(userid, &(EBC_userid[0]), l_userid, pLog);
-      if (rc == SUCCESS) {
-         log_debug(pLog, "Userid folded, converted to EBCDIC.");
-         memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
-         p_uadmin_parms->l_userid = l_userid;
-      }
-      else {
-         log_error(pLog, "Unable to convert userid to EBCDIC.");
-         return FAILURE;
-      }
+      rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
+      if (rc == FAILURE)
+         return rc;
+      memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
+      p_uadmin_parms->l_userid = l_userid;
       uadmin_print(p_uadmin_parms, pLog);
       return SUCCESS;
-      /*
-      BYTE p_segments = (BYTE *)p_uadmin_parms + sizeof(R_ADMIN_UADMIN_PARMS_T);
-    int i_seg = 1;
-    char seg_name[9];                  // var for null-terminating strings
-    R_ADMIN_SDESC_T *p_seg = p_sdesc;
-
-    while(i_seg <= nSegments)
-      {
-       BYTE *finger = (BYTE *)p_seg + p_seg->off_fdesc_1;
-
-       memset(seg_name, 0, sizeof(seg_name));
-       strncpy(seg_name, p_seg->name, sizeof(p_seg->name));
-
-       printf("Segment %d (R_ADMIN_SDESC_T)\n", i_seg);
-       printf("   +0 name:        %s\n",seg_name);
-       printf("   +8 flags:       %08x\n",p_seg->flags);
-       printf("   +C nFields:    %d\n",p_seg->nFields);
-       printf("  +10 reserved\n");
-       printf("  +14 off_fdesc_1: %d\n",p_seg->off_fdesc_1);
-       printf("  +18 reserved\n");
-
-       // If this is the last segment, then fields follow immediately, 
-       // otherwise, they are at the offset in this segment descriptor.
-       if (i_seg <= nSegments)
-          finger = (BYTE *)p_seg + sizeof(R_ADMIN_SDESC_T);
-       else
-          finger = (BYTE *)p_seg + p_seg->off_fdesc_1;
-       uadmin_kv_to_fields((R_ADMIN_FDESC_T *)finger, p_seg->nFields, pLog);
-
-       i_seg++;
-       p_seg++;
-      }
-      */
-
    }                                   // uadmin_dump_segments
+
+RC convert_to_ebcdic(char *name, char *ascii_string, char *ebcdic_buffer, int l_string, LOGGER_T *pLog) {
+   memset(&(ebcdic_buffer[0]), 0, l_string);
+   rc = tc_a2e(ascii_string, &(ebcdic_buffer[0]), l_string, pLog);
+   if (rc == SUCCESS) {
+      log_debug(pLog, "%s folded, converted to EBCDIC.", name);
+   }
+   else {
+      log_error(pLog, "Unable to convert %s to EBCDIC.", name);
+      return FAILURE;
+   }
+   return SUCCESS;
+}
 
 void uadmin_kv_to_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, LOGGER_T *pLog)
    {                                   // uadmin_dump_fields
