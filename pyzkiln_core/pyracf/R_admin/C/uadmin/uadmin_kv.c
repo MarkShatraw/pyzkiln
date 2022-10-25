@@ -113,7 +113,7 @@ RC uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGGER_
    RC rc = SUCCESS;
    // Build BASE segment header
    int field_count = count_base_segment_fields(base_segment);
-   build_segment_header(finger, &&(EBCDIC_BASE_KEY[0]), field_count);
+   build_segment_header(finger, &(&(EBCDIC_BASE_KEY[0])), field_count);
    // Add segment fields
    if (base_segment->name != NULL) {
       rc = add_key_value_field(finger, "name", EBCDIC_NAME_KEY, base_segment->name, pLog);
