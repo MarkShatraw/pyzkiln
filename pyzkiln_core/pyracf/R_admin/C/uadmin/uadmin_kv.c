@@ -30,7 +30,7 @@ RC uadmin_build_base_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
 int count_base_segment_fields(BASE_SEGMENT_T *);
 RC uadmin_build_omvs_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
-void build_segment_header(BYTE, char*, int);
+void build_segment_header(BYTE, const char *, int);
 RC add_key_value_field(BYTE *, char *, char *, KV_T *, LOGGER_T *);
 void add_boolean_field(BYTE *, char *);
 RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
@@ -113,7 +113,7 @@ RC uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGGER_
    RC rc = SUCCESS;
    // Build BASE segment header
    int field_count = count_base_segment_fields(base_segment);
-   build_segment_header(finger, (char *)EBCDIC_BASE_KEY, field_count);
+   build_segment_header(finger, &(EBCDIC_BASE_KEY[0]), field_count);
    // Add segment fields
    if (base_segment->name != NULL) {
       rc = add_key_value_field(finger, "name", EBCDIC_NAME_KEY, base_segment->name, pLog);
@@ -183,7 +183,7 @@ int count_omvs_segment_fields(OMVS_SEGMENT_T *omvs_segment) {
    return field_count;
 }
 
-void build_segment_header(BYTE *finger, char *ebcdic_key, int field_count) {
+void build_segment_header(BYTE *finger, const char *ebcdic_key, int field_count) {
    // Set segment key
    int ebcdic_key_length = sizeof(ebcdic_key);
    memcpy(finger, ebcdic_key, ebcdic_key_length);
