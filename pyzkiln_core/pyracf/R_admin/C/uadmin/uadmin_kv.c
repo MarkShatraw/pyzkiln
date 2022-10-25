@@ -32,7 +32,7 @@ RC uadmin_build_omvs_segment(BYTE *, OMVS_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
 void build_segment_header(BYTE, const char *, int);
 RC add_key_value_field(BYTE *, char *, const char *, KV_T *, LOGGER_T *);
-void add_boolean_field(BYTE *, char *);
+void add_boolean_field(BYTE *, const char *);
 RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -189,7 +189,7 @@ void build_segment_header(BYTE *finger, const char *ebcdic_key, int field_count)
    memcpy(finger, ebcdic_key, ebcdic_key_length);
    finger += ebcdic_key_length;
    // Set create flag
-   memcpy(finger, YES_FLAG, 1);
+   memcpy(finger, &YES_FLAG, 1);
    finger++;
    // Set field count
    memcpy(finger, &field_count, sizeof(int));
@@ -211,7 +211,7 @@ RC add_key_value_field(BYTE *finger, char *eye_catcher, const char *ebcdic_key, 
    int l_value = pKVV->lVal;
    // Set length
    memcpy(finger, &l_value, sizeof(int));
-   finger += sizeof(int)
+   finger += sizeof(int);
    // Convert value to EBCDIC.
    char ebcdic_value[l_value];
    rc = convert_to_ebcdic(eye_catcher, value, ebcdic_value, l_value, pLog);
@@ -223,7 +223,7 @@ RC add_key_value_field(BYTE *finger, char *eye_catcher, const char *ebcdic_key, 
    return rc
 }
 
-void add_boolean_field(BYTE *finger, char *ebcdic_key) {
+void add_boolean_field(BYTE *finger, const char *ebcdic_key) {
    // Set key
    int l_ebcdic_key = sizeof(ebcdic_key);
    memcpy(finger, ebcdic_key, l_ebcdic_key);
@@ -235,7 +235,7 @@ void add_boolean_field(BYTE *finger, char *ebcdic_key) {
    int length = 0;
    // Set length
    memcpy(finger, &length, sizeof(int));
-   finger += sizeof(int)
+   finger += sizeof(int);
 }
 
 RC convert_to_ebcdic(char *eye_catcher, char *ascii_string, char ebcdic_buffer[], int l_string, LOGGER_T *pLog) {
