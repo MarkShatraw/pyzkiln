@@ -28,7 +28,7 @@ const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 // Local prototypes
 RC uadmin_build_base_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
 int count_base_segment_fields(BASE_SEGMENT_T *);
-RC uadmin_build_omvs_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
+RC uadmin_build_omvs_segment(BYTE *, OMVS_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
 void build_segment_header(BYTE, const char *, int);
 RC add_key_value_field(BYTE *, char *, const char *, KV_T *, LOGGER_T *);
@@ -113,7 +113,7 @@ RC uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGGER_
    RC rc = SUCCESS;
    // Build BASE segment header
    int field_count = count_base_segment_fields(base_segment);
-   build_segment_header(finger, &(&(EBCDIC_BASE_KEY[0])), field_count);
+   build_segment_header(finger, EBCDIC_BASE_KEY, field_count);
    // Add segment fields
    if (base_segment->name != NULL) {
       rc = add_key_value_field(finger, "name", EBCDIC_NAME_KEY, base_segment->name, pLog);
