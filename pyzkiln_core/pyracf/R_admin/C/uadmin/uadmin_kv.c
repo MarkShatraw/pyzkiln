@@ -152,7 +152,7 @@ RC uadmin_build_omvs_segment(BYTE *finger, OMVS_SEGMENT_T *omvs_segment, LOGGER_
    RC rc = SUCCESS;
    // Build OMVS segment header
    int field_count = count_omvs_segment_fields(omvs_segment);
-   build_segment_header(finger, EBCDIC_OMVS_KEY, field_count);
+   build_segment_header(finger, &EBCDIC_OMVS_KEY, field_count);
    // Add segment fields
    if (omvs_segment->uid != NULL) {
       rc = add_key_value_field(finger, "uid", EBCDIC_UID_KEY, omvs_segment->uid, pLog);
