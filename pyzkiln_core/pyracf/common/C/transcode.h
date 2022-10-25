@@ -21,7 +21,7 @@
 #define CCSID_ASCII      0x00819
 
 #define ENC_ASCII   "ISO8859-1"
-#define ENC_EBCDIC  "IBM-037"
+#define ENC_EBCDIC  "IBM-1047"
 
 iconv_t tc_init(CCSID, CCSID, LOGGER_T *);
 void    tc_term(iconv_t, LOGGER_T *);

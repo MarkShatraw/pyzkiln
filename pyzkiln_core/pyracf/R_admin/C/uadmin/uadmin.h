@@ -71,6 +71,35 @@ typedef struct CALL_ARGS_LIST {
    char * __ptr32 * __ptr32 ppOutbuf;
    } CALL_ARGS_LIST_T;
 
+// Base segment
+const char EBCDIC_BASE_KEY[] = { 0xc2, 0xc1 ,0xe2, 0xc5 };
+const char EBCDIC_NAME_KEY[] = { 0xd5, 0xc1, 0xd4, 0xc5 };
+const char EBCDIC_PASSWORD_KEY[] = { 0xd7, 0xc1, 0xe2, 0xe2, 0xe6, 0xd6, 0xd9, 0xc4 };
+const char EBCDIC_OWNER_KEY[] = { 0xd6, 0xe6, 0xd5, 0xc5, 0xd9 };
+const char EBCDIC_SPECIAL_KEY[] = { 0xe2, 0xd7, 0xc5, 0xc3, 0xc9, 0xc1, 0xd3 };
+
+typedef struct BASE_SEGMENT {
+   KV_T * name;
+   KV_T * password;
+   KV_T * owner;
+   KV_T * special;
+} BASE_SEGMENT_T;
+
+// OMVS segment
+const char EBCDIC_OMVS_KEY[] = { 0xd6, 0xd4, 0xe5, 0xe2 };
+const char EBCDIC_UID_KEY[] = { 0xe4, 0xc9, 0xc4 };
+const char EBCDIC_HOME_KEY[] = { 0xc8, 0xd6, 0xd4, 0xc5 };
+const char EBCDIC_PROGRAM_KEY[] = { 0xd7, 0xd9, 0xd6, 0xc7, 0xd9, 0xc1, 0xd4 };
+
+typedef struct OMVS_SEGMENT {
+   KV_T * uid;
+   KV_T * home;
+   KV_T * program;
+} OMVS_SEGMENT_T;
+
+const BYTE YES_FLAG = 0xe8;
+const BYTE NO_FLAG = 0xd5;
+
 // A convenience method to group the allocation of all the required
 // storage areas.
 typedef struct UNDERBAR_ARG_AREA {

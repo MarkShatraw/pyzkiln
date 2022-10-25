@@ -44,20 +44,40 @@ class Uadmin:
         return
         
 
-    def set_user_traits(self, traits, password):
+    def set_user_traits(self, traits):
         self.parms = traits
         if 'userid' not in traits:
             print('Error - must provide "userid" as dictionary key')
             raise Exception
         traits['func_type'] = self.func_type
-        self.name = traits['name']
-        self.verify_userid(traits['userid'])
-        self.userid = traits['userid']
-        self.verify_password(password)
-        self.password = password
+        # BASE segment fields
+        if 'name' in traits:
+            self.name = traits['name']
+        if 'userid' in traits:
+            self.verify_userid(traits['userid'])
+            self.userid = traits['userid']
+        if 'password' in traits:
+            self.verify_password(traits['password'])
+            self.password = traits['password']
+        if 'owner' in traits:
+            self.owner = traits['owner']
+        if 'special' in traits:
+            self.special = traits['special']
+        # OMVS segment fields
+        if 'uid' in traits:
+            self.uid = traits['uid']
+        if 'home' in traits:
+            self.home = traits['home']
+        if 'program' in traits:
+            self.program = traits['program']
         print(self.name)
         print(self.userid)
         print(self.password)
+        print(self.owner)
+        print(self.special)
+        print(self.uid)
+        print(self.home)
+        print(self.program)
         return
 
     def verify_userid(self, userid):

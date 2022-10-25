@@ -181,62 +181,13 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
 
         // Dump key value structure
         kv_print(pKVCtl_req);
-        printf((R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms));
-        printf((KV_T *)pKV); 
-        printf((LOGGER_T *)pUADMINCtl->pLog);
-        uadmin_kv_to_segments((R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), (KV_CTL_T *)pKVCtl_req, (LOGGER_T *)pUADMINCtl->pLog);
-        return 0;
 
-         //pUADMINCtl
-         //p31->args+sizeof(R_ADMIN_UADMIN_PARMS_T)
-        //uadmin_kv_to_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, LOGGER_T *pLog)
-
-
-        /*
-        // The name of the profile to extract.
-        pKV = kv_get(pKVCtl_req, pKV, "prof_name", 1, KEY_REQUIRED);
-
-        if (pKV != NULL)
-           {
-            pKVVal = kvv_get(pKVCtl_req, pKV, VAL_TYPE_TXT);
-
-            if (pKVVal != NULL)
-               {
-                log_info(pUADMINCtl->pLog, "Retrieved key %s, value %s", pKV->pKey, pKVVal->pVal);
-         
-                if (pKVVal->lVal < MAX_PROF_NAME_LEN)
-                   {
-                    char EBC_prof_name[MAX_PROF_NAME_LEN];
-
-                    // The profile name must be in EBCDIC and upper case for the call
-                    // to RACF.  Fold the name to upper, and convert the encoding.  Note - 
-                    // we don't have strupr, so convert 1 char at a time.
-                    for (int i=0; i<pKVVal->lVal; i++)
-                       pKVVal->pVal[i] = toupper(pKVVal->pVal[i]);
-                    memset(&(EBC_prof_name[0]), 0, MAX_PROF_NAME_LEN);
-                    rc = tc_a2e(pKVVal->pVal, &(EBC_prof_name[0]), pKVVal->lVal, pUADMINCtl->pLog);
-
-                    if (rc == SUCCESS)
-                       {
-                        log_debug(pUADMINCtl->pLog, "Profile name folded, converted to EBCDIC");
-                        memcpy(p31->args.prof_name.name, EBC_prof_name, pKVVal->lVal);
-                        p31->args.uadmin_parms.lProf_name = pKVVal->lVal;
-                       }
-
-                   }
-
-                else
-                   {
-                    int lMax = MAX_PROF_NAME_LEN;
-                    log_error(pUADMINCtl->pLog, "Profile name too long.");
-                    log_error(pUADMINCtl->pLog, "   length: %s, max: %d", pKVVal->lVal, lMax);
-                    return FAILURE;
-                   }
-
-               }
-         
-           }
-         */
+        // Build segments
+        uadmin_kv_to_segments(
+            (R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), 
+            (KV_CTL_T *)pKVCtl_req, 
+            (LOGGER_T *)pUADMINCtl->pLog
+         );
 
         // Now build a 31-bit argument list so that we can make the transition from
         // 64-bit XPLINK to 31-bit OSLINK.
@@ -250,12 +201,11 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
 
         p31->arg_list.pFunc_code = &(p31->args.func_code);
         p31->arg_list.pUADMIN_parms = &(p31->args.uadmin_parms);
-        //p31->arg_list.pProf_name = &(p31->args.prof_name.name[0]);
         p31->arg_list.pACEE = &(p31->args.ACEE);
         p31->arg_list.pOutbuf_subpool = &(p31->args.outbuf_subpool);
         p31->arg_list.ppOutbuf = &(p31->args.pOutbuf);
 
-        // Turn on the hight order bit of the last argument - marks the end of the
+        // Turn on the high order bit of the last argument - marks the end of the
         // argument list.
         *((unsigned int *__ptr32)&p31->arg_list.ppOutbuf) |= 0x80000000;
 

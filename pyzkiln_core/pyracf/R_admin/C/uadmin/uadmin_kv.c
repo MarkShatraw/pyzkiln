@@ -26,8 +26,14 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
+RC uadmin_build_base_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
+int count_base_segment_fields(BASE_SEGMENT_T);
+RC uadmin_build_omvs_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
+int count_omvs_segment_fields(OMVS_SEGMENT_T);
+void build_segment_header(BYTE, char *, int);
+RC add_key_value_field(BYTE *, char *, char *, KV_T *, LOGGER_T *);
+void add_boolean_field(BYTE *, char *);
 RC convert_to_ebcdic(char *, char *, char[], int, LOGGER_T *);
-void uadmin_kv_to_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
 RC key_val_to_kv(KV_CTL_T *, BYTE *, int, CCSID, BYTE *, int, CCSID);
@@ -44,97 +50,206 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 // Mainline code
 //
 RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCtl_req, LOGGER_T *pLog)
-   {    
-      log_debug(pLog, "Start kv to segments.");
-      RC rc = SUCCESS;
-      // extract userid
-      KV_T *pKV = kv_get_list(pKVCtl_req);
-      KV_T *useridKV = kv_get(pKVCtl_req, pKV, "userid", pKVCtl_req->lKV_list, KEY_REQUIRED);
-      KVV_T *useridpKVVal = useridKV->pKVVal_head;
-      char *userid = useridpKVVal->pVal;
-      int l_userid = useridpKVVal->lVal;
-      log_debug(pLog, "userid: %s", userid);
+{    
+   log_debug(pLog, "Start kv to segments.");
+   RC rc = SUCCESS;
+   // extract userid
+   KV_T *pKV = kv_get_list(pKVCtl_req);
+   KV_T *useridKV = kv_get(pKVCtl_req, pKV, "userid", pKVCtl_req->lKV_list, KEY_REQUIRED);
+   KVV_T *useridpKVVal = useridKV->pKVVal_head;
+   char *userid = useridpKVVal->pVal;
+   int l_userid = useridpKVVal->lVal;
+   log_debug(pLog, "userid: %s", userid);
 
-      int n_segs = 0;
+   BYTE *finger = (BYTE *)p_uadmin_parms + sizeof(R_ADMIN_UADMIN_PARMS_T);
+   int n_segs = 0;
 
-      // Get BASE segment fields.
-      KV_T *nameKV = kv_get(pKVCtl_req, pKV, "name", pKVCtl_req->lKV_list, KEY_OPTIONAL);
-      KV_T *ownerKV = kv_get(pKVCtl_req, pKV, "owner", pKVCtl_req->lKV_list, KEY_OPTIONAL);
-      KV_T *specialKV = kv_get(pKVCtl_req, pKV, "special", pKVCtl_req->lKV_list, KEY_OPTIONAL);
-      if (nameKV != NULL || ownerKV != NULL || specialKV != NULL) {
-         n_segs++;
-      }
+   // Get BASE segment fields.
+   BASE_SEGMENT_T *base_segment = calloc(1, sizeof(BASE_SEGMENT_T));
+   base_segment->name = kv_get(pKVCtl_req, pKV, "name", pKVCtl_req->lKV_list, KEY_REQUIRED);
+   base_segment->password = kv_get(pKVCtl_req, pKV, "password", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+   base_segment->owner = kv_get(pKVCtl_req, pKV, "owner", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+   base_segment->special = kv_get(pKVCtl_req, pKV, "special", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+   // check for OMVS segment fields and build OMVS segment if any found.
+   if (
+         base_segment->name != NULL 
+            || base_segment->password != NULL 
+            || base_segment->owner !=NULL 
+            || base_segment->special !=NULL
+      ) {
+      rc = uadmin_build_base_segment(finger, base_segment, pLog);
+      if (rc == FAILURE) 
+         return rc;
+      n_segs++;
+   }
 
-      // Get OMVS segment fields.
-      KV_T *uidKV = kv_get(pKVCtl_req, pKV, "uid", pKVCtl_req->lKV_list, KEY_OPTIONAL);
-      KV_T *homeKV = kv_get(pKVCtl_req, pKV, "home", pKVCtl_req->lKV_list, KEY_OPTIONAL);
-      KV_T *programKV = kv_get(pKVCtl_req, pKV, "program", pKVCtl_req->lKV_list, KEY_OPTIONAL);
-      if (uidKV != NULL || homeKV != NULL || programKV != NULL) {
-         n_segs++;
-      }
+   // Get OMVS segment fields.
+   OMVS_SEGMENT_T *omvs_segment = calloc(1, sizeof(OMVS_SEGMENT_T));
+   omvs_segment->uid = kv_get(pKVCtl_req, pKV, "uid", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+   omvs_segment->home = kv_get(pKVCtl_req, pKV, "home", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+   omvs_segment->program = kv_get(pKVCtl_req, pKV, "program", pKVCtl_req->lKV_list, KEY_OPTIONAL);
+   // check for OMVS segment fields and build OMVS segment if any found.
+   if (omvs_segment->uid != NULL || omvs_segment->home != NULL || omvs_segment->program != NULL) {
+      rc = uadmin_build_omvs_segment(finger, omvs_segment, pLog);
+      if (rc == FAILURE) 
+         return rc;
+      n_segs++;
+   }
 
-      // Build Request Header
-      char EBC_userid[l_userid];
-      rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
+   // Build Request Header
+   char EBC_userid[l_userid];
+   rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
+   if (rc == FAILURE)
+      return rc;
+   memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
+   p_uadmin_parms->l_userid = l_userid;
+   p_uadmin_parms->n_segs = n_segs;
+   p_uadmin_parms->off_seg_1 = sizeof(R_ADMIN_UADMIN_PARMS_T);
+   uadmin_print(p_uadmin_parms, pLog);
+   return SUCCESS;
+}
+
+RC uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGGER_T *pLog) {
+   RC rc = SUCCESS;
+   // Build BASE segment header
+   int field_count = count_base_segment_fields(base_segment);
+   build_segment_header(finger, EBCDIC_BASE_KEY, field_count);
+   // Add segment fields
+   if (base_segment->name != NULL) {
+      rc = add_key_value_field(finger, "name", EBCDIC_NAME_KEY, base_segment->name, pLog);
       if (rc == FAILURE)
          return rc;
-      memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
-      p_uadmin_parms->l_userid = l_userid;
-      p_uadmin_parms->n_segs = n_segs;
-      uadmin_print(p_uadmin_parms, pLog);
-      return SUCCESS;
-   }                                   // uadmin_dump_segments
-
-RC convert_to_ebcdic(char *name, char *ascii_string, char ebcdic_buffer[], int l_string, LOGGER_T *pLog) {
-   memset(&(ebcdic_buffer[0]), 0, l_string);
-   RC rc = tc_a2e(ascii_string, &(ebcdic_buffer[0]), l_string, pLog);
-   if (rc == SUCCESS) {
-      log_debug(pLog, "%s folded, converted to EBCDIC.", name);
    }
-   else {
-      log_error(pLog, "Unable to convert %s to EBCDIC.", name);
-      return FAILURE;
+   if (base_segment->password != NULL) {
+      rc = add_key_value_field(finger, "password", EBCDIC_PASSWORD_KEY, base_segment->password, pLog);
+      if (rc == FAILURE)
+         return rc;
+   }
+   if (base_segment->owner != NULL) {
+      rc = add_key_value_field(finger, "owner", EBCDIC_OWNER_KEY, base_segment->owner, pLog);
+      if (rc == FAILURE)
+         return rc;
+   }
+   if (base_segment->special != NULL)
+      add_boolean_field(finger, EBCDIC_SPECIAL_KEY);
+   return SUCCESS;
+}
+
+int count_base_segment_fields(BASE_SEGMENT_T base_segment) {
+   int field_count = 0;
+   if (base_segment->name != NULL)
+      field_count++;
+   if (base_segment->password != NULL)
+      field_count++;
+   if (base_segment->owner != NULL)
+      field_count++;
+   if (base_segment->special != NULL)
+      field_count++;
+   return field_count;
+}
+
+RC uadmin_build_omvs_segment(BYTE *finger, OMVS_SEGMENT_T *omvs_segment, LOGGER_T *pLog) {
+   RC rc = SUCCESS;
+   // Build OMVS segment header
+   int field_count = count_omvs_segment_fields(omvs_segment);
+   build_segment_header(finger, EBCDIC_OMVS_KEY, field_count);
+   // Add segment fields
+   if (omvs_segment->uid != NULL) {
+      rc = add_key_value_field(finger, "uid", EBCDIC_UID_KEY, omvs_segment->uid, pLog);
+      if (rc == FAILURE)
+         return rc;
+   }
+   if (omvs_segment->home != NULL) {
+      rc = add_key_value_field(finger, "home", EBCDIC_HOME_KEY, omvs_segment->home, pLog);
+      if (rc == FAILURE)
+         return rc;
+   }
+   if (omvs_segment->program != NULL) {
+      rc = add_key_value_field(finger, "program", EBCDIC_PROGRAM_KEY, omvs_segment->program, pLog);
+      if (rc == FAILURE)
+         return rc;
    }
    return SUCCESS;
 }
 
-void uadmin_kv_to_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, LOGGER_T *pLog)
-   {                                   // uadmin_dump_fields
-    int i_fld = 1;
-    char fld_name[9];                  // var for null-terminating strings
-    R_ADMIN_FDESC_T *p_fld = p_fdesc;
+int count_omvs_segment_fields(OMVS_SEGMENT_T omvs_segment) {
+   int field_count = 0;
+   if (omvs_segment->uid != NULL)
+      field_count++;
+   if (omvs_segment->home != NULL)
+      field_count++;
+   if (omvs_segment->program != NULL)
+      field_count++;
+   return field_count;
+}
 
-    while(i_fld <= nFields)
-      {
-       memset(fld_name, 0, sizeof(fld_name));
-       strncpy(fld_name, p_fld->name, sizeof(p_fld->name));
+void build_segment_header(BYTE *finger, char *ebcdic_key, int field_count) {
+   // Set segment key
+   int ebcdic_key_length = sizeof(ebcdic_key);
+   memcpy(finger, ebcdic_key, ebcdic_key_length);
+   finger += ebcdic_key_length;
+   // Set create flag
+   memcpy(finger, YES_FLAG, 1);
+   finger++;
+   // Set field count
+   memcpy(finger, &field_count, sizeof(int));
+   finger += sizeof(int);
+}
 
-       printf("Field %d (R_ADMIN_FDESC_T)\n", i_fld);
-       printf("   +0 name:          %s\n",fld_name);
-       printf("   +8 type:          %04x\n",p_fld->type);
-       printf("   +A reserved\n");                        
-       printf("   +C flags:         %08x\n",p_fld->flags);
+RC add_key_value_field(BYTE *finger, char *eye_catcher, char *ebcdic_key, KV_T *pKV, LOGGER_T *pLog) {
+   RC rc = SUCCESS;
+   // Set key
+   int l_ebcdic_key = sizeof(ebcdic_key);
+   memcpy(finger, ebcdic_key, l_ebcdic_key);
+   finger += l_ebcdic_key;
+   // Set create flag
+   memcpy(finger, YES_FLAG, 1);
+   finger++;
+   // extract value and length
+   KVV_T *pKVV = pKV->pKVVal_head;
+   char *value = pKVV->pVal;
+   int l_value = pKVV->lVal;
+   // Set length
+   memcpy(finger, &l_value, sizeof(int));
+   finger += sizeof(int)
+   // Convert value to EBCDIC.
+   char ebcdic_value[l_value];
+   rc = convert_to_ebcdic(eye_catcher, value, ebcdic_value, l_value, pLog);
+   if (rc == FAILURE)
+      return rc;
+   // Set value
+   memcpy(finger, ebcdic_value, l_value);
+   finger += l_value;
+   return rc
+}
 
-       if (!(p_fld->type & t_repeat_field_hdr))
-         printf("  +10 l_fld_data: %d\n",p_fld->len_rpt.l_fld_data);
-       else
-         printf("  +10 n_repeat_grps: %d\n",p_fld->len_rpt.n_repeat_grps);
+void add_boolean_field(BYTE *finger, char *ebcdic_key) {
+   // Set key
+   int l_ebcdic_key = sizeof(ebcdic_key);
+   memcpy(finger, ebcdic_key, l_ebcdic_key);
+   finger += l_ebcdic_key;
+   // Set create flag
+   memcpy(finger, YES_FLAG, 1);
+   finger++;
+   // length is zero for boolean fields
+   int length = 0;
+   // Set length
+   memcpy(finger, &length, sizeof(int));
+   finger += sizeof(int)
+}
 
-       printf("  +14 reserved\n");
-
-       if (!(p_fld->type & t_repeat_field_hdr))
-         printf("  +18 off_fld_data:   %d\n",p_fld->off_rpt.off_fld_data);
-       else
-         printf("  +18 n_repeat_elems: %d\n",p_fld->off_rpt.n_repeat_elems);
-
-       printf("  +1C reserved\n");
-
-       i_fld++;
-       p_fld++;
-      }
-
+RC convert_to_ebcdic(char *eye_catcher, char *ascii_string, char ebcdic_buffer[], int l_string, LOGGER_T *pLog) {
+   memset(&(ebcdic_buffer[0]), 0, l_string);
+   RC rc = tc_a2e(ascii_string, &(ebcdic_buffer[0]), l_string, pLog);
+   if (rc == SUCCESS) {
+      log_debug(pLog, "%s folded, converted to EBCDIC.", eye_catcher);
    }
-
+   else {
+      log_error(pLog, "Unable to convert %s to EBCDIC.", eye_catcher);
+      return FAILURE;
+   }
+   return SUCCESS;
+}
 
 KV_CTL_T *results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMIN_results)
    {
