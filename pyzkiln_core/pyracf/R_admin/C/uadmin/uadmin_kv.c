@@ -30,10 +30,10 @@ RC uadmin_build_base_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
 int count_base_segment_fields(BASE_SEGMENT_T *);
 RC uadmin_build_omvs_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
-void build_segment_header(BYTE, char *, int);
+void build_segment_header(BYTE, const char *, int);
 RC add_key_value_field(BYTE *, char *, char *, KV_T *, LOGGER_T *);
 void add_boolean_field(BYTE *, char *);
-RC convert_to_ebcdic(char *, char *, char[], int, LOGGER_T *);
+RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
 RC key_val_to_kv(KV_CTL_T *, BYTE *, int, CCSID, BYTE *, int, CCSID);
@@ -183,7 +183,7 @@ int count_omvs_segment_fields(OMVS_SEGMENT_T *omvs_segment) {
    return field_count;
 }
 
-void build_segment_header(BYTE *finger, char *ebcdic_key, int field_count) {
+void build_segment_header(BYTE *finger, const char *ebcdic_key, int field_count) {
    // Set segment key
    int ebcdic_key_length = sizeof(ebcdic_key);
    memcpy(finger, ebcdic_key, ebcdic_key_length);
