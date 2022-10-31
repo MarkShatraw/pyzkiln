@@ -32,7 +32,7 @@ void* uadmin_build_omvs_segment(BYTE *, OMVS_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
 void* build_segment_descriptor(const char *, int);
 void* build_key_value_field_descriptor(char *, const char *, KV_T *, LOGGER_T *);
-void* build_boolean_field_descriptor(const char *);
+void* build_boolean_field_descriptor(char*, const char *, LOGGER_T *);
 RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -180,8 +180,12 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
       offset_next_segment += owner_field_descriptor_size;
    }
    // Add 'special' field
-   if (base_segment->special != NULL)
-      R_ADMIN_FDESC_T *special_field_descriptor = build_boolean_field_descriptor(EBCDIC_SPECIAL_KEY);
+   if (base_segment->special != NULL) {
+      R_ADMIN_FDESC_T *special_field_descriptor = build_boolean_field_descriptor(
+         "special", 
+         EBCDIC_SPECIAL_KEY, 
+         pLog
+      );
       if (special_field_descriptor == NULL) {
          log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'special' field.");
          return NULL;
@@ -190,6 +194,7 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
       memcpy(finger, special_field_descriptor, special_field_descriptor_size);
       finger += special_field_descriptor_size;
       offset_next_segment += special_field_descriptor_size;
+   }
    return offset_next_segment;
 }
 
@@ -325,7 +330,7 @@ void* build_key_value_field_descriptor(char *eye_catcher, const char *ebcdic_key
    return field_descriptor;
 }
 
-void* build_boolean_field_descriptor(const char *ebcdic_key) {
+void* build_boolean_field_descriptor(char * eye_catcher, const char *ebcdic_key, LOGGER_T *pLog) {
    R_ADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(R_ADMIN_SDESC_T));
    if (field_descriptor != NULL) {
       // Set name/key
