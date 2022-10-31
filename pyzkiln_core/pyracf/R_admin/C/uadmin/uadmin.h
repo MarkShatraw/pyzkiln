@@ -97,8 +97,8 @@ typedef struct OMVS_SEGMENT {
    KV_T * program;
 } OMVS_SEGMENT_T;
 
-const BYTE YES_FLAG = 0xe8;
-const BYTE NO_FLAG = 0xd5;
+const FLAG YES_FLAG = 0xe8; // 'Y' in EBCDIC
+const FLAG NO_FLAG = 0xd5;  // 'N' in EBCDIC
 
 // A convenience method to group the allocation of all the required
 // storage areas.
