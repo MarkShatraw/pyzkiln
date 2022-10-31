@@ -32,7 +32,7 @@ void* uadmin_build_omvs_segment(BYTE *, OMVS_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
 void* build_segment_descriptor(const char *, int);
 void* build_key_value_field_descriptor(char *, const char *, KV_T *, LOGGER_T *);
-void add_boolean_field(BYTE *, const char *);
+void* build_boolean_field_descriptor(const char *);
 RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -181,7 +181,15 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
    }
    // Add 'special' field
    if (base_segment->special != NULL)
-      add_boolean_field(finger, EBCDIC_SPECIAL_KEY);
+      R_ADMIN_FDESC_T *special_field_descriptor = build_boolean_field_descriptor(EBCDIC_SPECIAL_KEY);
+      if (special_field_descriptor == NULL) {
+         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'special' field.");
+         return NULL;
+      }
+      int special_field_descriptor_size = sizeof(special_field_descriptor);
+      memcpy(finger, special_field_descriptor, special_field_descriptor_size);
+      finger += special_field_descriptor_size;
+      offset_next_segment += special_field_descriptor_size;
    return offset_next_segment;
 }
 
@@ -317,19 +325,31 @@ void* build_key_value_field_descriptor(char *eye_catcher, const char *ebcdic_key
    return field_descriptor;
 }
 
-void add_boolean_field(BYTE *finger, const char *ebcdic_key) {
-   // Set key
-   int l_ebcdic_key = sizeof(ebcdic_key);
-   memcpy(finger, ebcdic_key, l_ebcdic_key);
-   finger += l_ebcdic_key;
-   // Set create flag
-   memcpy(finger, &YES_FLAG, 1);
-   finger++;
-   // length is zero for boolean fields
-   int length = 0;
-   // Set length
-   memcpy(finger, &length, sizeof(int));
-   finger += sizeof(int);
+void* build_boolean_field_descriptor(const char *ebcdic_key) {
+   R_ADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(R_ADMIN_SDESC_T));
+   if (field_descriptor != NULL) {
+      // Set name/key
+      memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
+      // Set type
+      // TODO
+      // Set flag to 'Y'
+      field_descriptor->flags = YES_FLAG;
+      // Create repeat group length descriptor
+      FDATA_LEN_RPT_T * repeat_group_length_descriptor = calloc(1, sizeof(FDATA_LEN_RPT_T));
+      if (repeat_group_length_descriptor == NULL) {
+         log_error(pLog, "Unable to create 'FDATA_LEN_RPT_T' for '%s' field.", eye_catcher);
+         return NULL;
+      }
+      // TODO
+      // Create repeat group offset descriptor
+      FDATA_OFF_RPT_T * repeat_group_offset_descriptor = calloc(1, sizeof(FDATA_OFF_RPT_T));
+      if (repeat_group_offset_descriptor == NULL) {
+         log_error(pLog, "Unable to create 'FDATA_OFF_RPT_T' for '%s' field.", eye_catcher);
+         return NULL;
+      }
+      //TODO
+   }
+   return field_descriptor;
 }
 
 RC convert_to_ebcdic(char *eye_catcher, char *ascii_string, char ebcdic_buffer[], int l_string, LOGGER_T *pLog) {
