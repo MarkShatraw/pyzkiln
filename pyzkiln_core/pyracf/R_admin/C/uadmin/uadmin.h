@@ -26,6 +26,16 @@
 // Constants
 #define L_RACF_WORK_AREA 1024
 
+// do these need reserved fields???
+// UADMIN Field descriptor
+typedef struct UADMIN_FDESC {
+   char             name[8];     // field name, upper case, blank padded
+   UINT             flags;       // EBCDIC byte 'Y' or 'N'
+   int              l_data;      // size of data
+   char *           data;        // data
+                                 // start of next field descriptor
+   } UADMIN_FDESC_T;
+
 // We have to marshall our arguments into a 31-bit area that the RACF 
 // interface can use.  Not only do the arguments have to live in this
 // 31-bit area "under the bar", the argument list has to be there as

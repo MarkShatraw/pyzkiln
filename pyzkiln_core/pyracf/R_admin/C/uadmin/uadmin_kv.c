@@ -26,13 +26,13 @@
 const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
-void* uadmin_build_base_segment(BYTE *, BASE_SEGMENT_T *, LOGGER_T *);
+int uadmin_build_base_segment(BYTE *, KV_CTL_T*, BASE_SEGMENT_T *, LOGGER_T *);
 int count_base_segment_fields(BASE_SEGMENT_T *);
-void* uadmin_build_omvs_segment(BYTE *, OMVS_SEGMENT_T *, LOGGER_T *);
+int uadmin_build_omvs_segment(BYTE *, KV_CTL_T*, OMVS_SEGMENT_T *, LOGGER_T *);
 int count_omvs_segment_fields(OMVS_SEGMENT_T *);
 void* build_segment_descriptor(const char *, int);
-void* build_key_value_field_descriptor(char *, const char *, KV_T *, LOGGER_T *);
-void* build_boolean_field_descriptor(char*, const char *, LOGGER_T *);
+void* build_key_value_field_descriptor(char *, const char *, KV_CTL_T *, KV_T *, LOGGER_T *);
+void* build_boolean_field_descriptor(char*, const char *, KV_CTL_T *, KV_T *, LOGGER_T *);
 RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -78,8 +78,8 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
             || base_segment->owner !=NULL 
             || base_segment->special !=NULL
       ) {
-      offset_to_next_segment = uadmin_build_base_segment(finger, base_segment, pLog);
-      if (offset_to_next_segment == NULL) {
+      offset_to_next_segment = uadmin_build_base_segment(finger, pKVCTL_req, base_segment, pLog);
+      if (offset_to_next_segment == -1) {
          log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'base' segment.");
          return FAILURE;
       }
@@ -94,8 +94,8 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
    omvs_segment->program = kv_get(pKVCtl_req, pKV, "program", pKVCtl_req->lKV_list, KEY_OPTIONAL);
    // check for OMVS segment fields and build OMVS segment if any found.
    if (omvs_segment->uid != NULL || omvs_segment->home != NULL || omvs_segment->program != NULL) {
-      offset_to_next_segment = uadmin_build_omvs_segment(finger, omvs_segment, pLog);
-      if (offset_to_next_segment == NULL) {
+      offset_to_next_segment = uadmin_build_omvs_segment(finger, pKVCTL_req, omvs_segment, pLog);
+      if (offset_to_next_segment == -1) {
          log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'omvs' segment.");
          return FAILURE;
       }
@@ -116,13 +116,13 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
    return SUCCESS;
 }
 
-void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGGER_T *pLog) {
+int uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_T *base_segment, LOGGER_T *pLog) {
    int offset_next_segment = 0;
    // Build BASE segment header
    int field_count = count_base_segment_fields(base_segment);
    R_ADMIN_SDESC_T *base_segment_descriptor = build_segment_descriptor(EBCDIC_BASE_KEY, field_count);
    if (base_segment_descriptor == NULL) {
-      return NULL;
+      return -1;
    }
    int base_segment_descriptor_size = sizeof(base_segment_descriptor);
    memcpy(finger, base_segment_descriptor, base_segment_descriptor_size);
@@ -130,15 +130,16 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
    offset_next_segment += base_segment_descriptor_size;
    // Add 'name' field
    if (base_segment->name != NULL) {
-      R_ADMIN_FDESC_T *name_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *name_field_descriptor = build_key_value_field_descriptor(
          "name", 
          EBCDIC_NAME_KEY, 
+         pKVCTL_req,
          base_segment->name, 
          pLog
       );
       if (name_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'name' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'name' field.");
+         return -1;
       }
       int name_field_descriptor_size = sizeof(name_field_descriptor);
       memcpy(finger, name_field_descriptor, name_field_descriptor_size);
@@ -147,15 +148,16 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
    }
    // Add 'password' field
    if (base_segment->password != NULL) {
-      R_ADMIN_FDESC_T *password_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *password_field_descriptor = build_key_value_field_descriptor(
          "password", 
          EBCDIC_PASSWORD_KEY, 
+         pKVCTL_req,
          base_segment->password, 
          pLog
       );
       if (password_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'password' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'password' field.");
+         return -1;
       }
       int password_field_descriptor_size = sizeof(password_field_descriptor);
       memcpy(finger, password_field_descriptor, password_field_descriptor_size);
@@ -164,15 +166,16 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
    }
    // Add 'owner' field
    if (base_segment->owner != NULL) {
-      R_ADMIN_FDESC_T *owner_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *owner_field_descriptor = build_key_value_field_descriptor(
          "owner", 
          EBCDIC_OWNER_KEY, 
+         pKVCTL_req,
          base_segment->owner, 
          pLog
       );
       if (owner_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'owner' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'owner' field.");
+         return -1;
       }
       int owner_field_descriptor_size = sizeof(owner_field_descriptor);
       memcpy(finger, owner_field_descriptor, owner_field_descriptor_size);
@@ -181,14 +184,16 @@ void* uadmin_build_base_segment(BYTE *finger, BASE_SEGMENT_T *base_segment, LOGG
    }
    // Add 'special' field
    if (base_segment->special != NULL) {
-      R_ADMIN_FDESC_T *special_field_descriptor = build_boolean_field_descriptor(
+      UADMIN_FDESC_T *special_field_descriptor = build_boolean_field_descriptor(
          "special", 
          EBCDIC_SPECIAL_KEY, 
+         pKVCTL_req,
+         base_segment->special,
          pLog
       );
       if (special_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'special' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'special' field.");
+         return -1;
       }
       int special_field_descriptor_size = sizeof(special_field_descriptor);
       memcpy(finger, special_field_descriptor, special_field_descriptor_size);
@@ -211,13 +216,13 @@ int count_base_segment_fields(BASE_SEGMENT_T *base_segment) {
    return field_count;
 }
 
-void* uadmin_build_omvs_segment(BYTE *finger, OMVS_SEGMENT_T *omvs_segment, LOGGER_T *pLog) {
+int uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_T *omvs_segment, LOGGER_T *pLog) {
    int offset_next_segment = 0;
    // Build OMVS segment header
    int field_count = count_omvs_segment_fields(omvs_segment);
    R_ADMIN_SDESC_T * omvs_segment_descriptor = build_segment_descriptor(EBCDIC_OMVS_KEY, field_count);
    if (omvs_segment_descriptor == NULL) {
-      return NULL;
+      return -1;
    }
    int omvs_segment_descriptor_size = sizeof(omvs_segment_descriptor);
    memcpy(finger, omvs_segment_descriptor, omvs_segment_descriptor_size);
@@ -225,15 +230,16 @@ void* uadmin_build_omvs_segment(BYTE *finger, OMVS_SEGMENT_T *omvs_segment, LOGG
    offset_next_segment += omvs_segment_descriptor_size;
    // Add 'uid' field
    if (omvs_segment->uid != NULL) {
-      R_ADMIN_FDESC_T *uid_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *uid_field_descriptor = build_key_value_field_descriptor(
          "uid", 
          EBCDIC_UID_KEY, 
+         pKVCTL_req,
          omvs_segment->uid, 
          pLog
       );
       if (uid_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'uid' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'uid' field.");
+         return -1;
       }
       int uid_field_descriptor_size = sizeof(uid_field_descriptor);
       memcpy(finger, uid_field_descriptor, uid_field_descriptor_size);
@@ -242,15 +248,16 @@ void* uadmin_build_omvs_segment(BYTE *finger, OMVS_SEGMENT_T *omvs_segment, LOGG
    }
    // Add 'home' field
    if (omvs_segment->home != NULL) {
-      R_ADMIN_FDESC_T *home_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *home_field_descriptor = build_key_value_field_descriptor(
          "home", 
          EBCDIC_HOME_KEY, 
+         pKVCTL_req,
          omvs_segment->home, 
          pLog
       );
       if (home_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'home' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'home' field.");
+         return -1;
       }
       int home_field_descriptor_size = sizeof(home_field_descriptor);
       memcpy(finger, home_field_descriptor, home_field_descriptor_size);
@@ -259,15 +266,16 @@ void* uadmin_build_omvs_segment(BYTE *finger, OMVS_SEGMENT_T *omvs_segment, LOGG
    }
    // Add 'program' field
    if (omvs_segment->program != NULL) {
-      R_ADMIN_FDESC_T *program_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *program_field_descriptor = build_key_value_field_descriptor(
          "program", 
          EBCDIC_PROGRAM_KEY, 
+         pKVCTL_req,
          omvs_segment->program, 
          pLog
       );
       if (program_field_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'R_ADMIN_FDESC_T' for 'program' field.");
-         return NULL;
+         log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'program' field.");
+         return -1;
       }
       int program_field_descriptor_size = sizeof(program_field_descriptor);
       memcpy(finger, program_field_descriptor, program_field_descriptor_size);
@@ -303,56 +311,50 @@ void* build_segment_descriptor(const char *ebcdic_key, int field_count) {
    return segment_descriptor;
 }
 
-void* build_key_value_field_descriptor(char *eye_catcher, const char *ebcdic_key, KV_T *pKV, LOGGER_T *pLog) {
-   R_ADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(R_ADMIN_SDESC_T));
+void* build_key_value_field_descriptor(
+      char *eye_catcher, 
+      const char *ebcdic_key, 
+      KV_CTL_T *pKVCTL_req, 
+      KV_T *pKV, 
+      LOGGER_T *pLog
+) {
+   KVV_T pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
+   if (pKVV == NULL)
+      return NULL;
+   UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
    if (field_descriptor != NULL) {
       // Set name/key
       memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
-      // Set type
-      // TODO
       // Set flag to 'Y'
       field_descriptor->flags = YES_FLAG;
-      // Create repeat group length descriptor
-      FDATA_LEN_RPT_T * repeat_group_length_descriptor = calloc(1, sizeof(FDATA_LEN_RPT_T));
-      if (repeat_group_length_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'FDATA_LEN_RPT_T' for '%s' field.", eye_catcher);
-         return NULL;
-      }
-      // TODO
-      // Create repeat group offset descriptor
-      FDATA_OFF_RPT_T * repeat_group_offset_descriptor = calloc(1, sizeof(FDATA_OFF_RPT_T));
-      if (repeat_group_offset_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'FDATA_OFF_RPT_T' for '%s' field.", eye_catcher);
-         return NULL;
-      }
-      //TODO
+      // Set length of data.
+      field_descriptor->l_data = pKVV->lVal;
+      // Set data
+      memcpy(field_descriptor->data, pKVV->pVal, pKVV->plVal);
    }
    return field_descriptor;
 }
 
-void* build_boolean_field_descriptor(char * eye_catcher, const char *ebcdic_key, LOGGER_T *pLog) {
-   R_ADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(R_ADMIN_SDESC_T));
+void* build_boolean_field_descriptor(
+      char * eye_catcher, 
+      const char *ebcdic_key, 
+      KV_CTL_T *pKVCTL_req, 
+      KV_T *pKV,
+      LOGGER_T *pLog
+) {
+   KVV_T pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
+   if (pKVV == NULL)
+      return NULL;
+   UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
    if (field_descriptor != NULL) {
       // Set name/key
       memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
-      // Set type
-      // TODO
-      // Set flag to 'Y'
+      // Set boolean value
+      // Set to always yes for now. might need to come up with a smarter way later...
       field_descriptor->flags = YES_FLAG;
-      // Create repeat group length descriptor
-      FDATA_LEN_RPT_T * repeat_group_length_descriptor = calloc(1, sizeof(FDATA_LEN_RPT_T));
-      if (repeat_group_length_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'FDATA_LEN_RPT_T' for '%s' field.", eye_catcher);
-         return NULL;
-      }
-      // TODO
-      // Create repeat group offset descriptor
-      FDATA_OFF_RPT_T * repeat_group_offset_descriptor = calloc(1, sizeof(FDATA_OFF_RPT_T));
-      if (repeat_group_offset_descriptor == NULL) {
-         log_error(pLog, "Unable to create 'FDATA_OFF_RPT_T' for '%s' field.", eye_catcher);
-         return NULL;
-      }
-      //TODO
+      // Set length of data.
+      field_descriptor->l_data = pKVV->lVal;
+      // No data since this is a boolean field.
    }
    return field_descriptor;
 }

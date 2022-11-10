@@ -211,6 +211,8 @@ int ra_get_func_type(R_ADMIN_CTL_T *pRACtl, KV_CTL_T *pKVCtl_req)
     KV_T     *pKV;
     KVV_T *pKVVal;
 
+    kv_print(pKVCtl);
+
     // Get the function type from the input user request.
     pKV = kv_get(pRACtl->pKVCtl_req, pRACtl->pKVCtl_req->pKV_head, "racf", 1, KEY_REQUIRED);
     if (pKV != NULL)

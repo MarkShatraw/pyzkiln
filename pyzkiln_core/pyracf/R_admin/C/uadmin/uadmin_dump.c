@@ -94,6 +94,9 @@ void uadmin_print_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, BYTE *pParms, LO
 
     while(i_fld <= nFields)
       {
+        printf("TODO");
+        // TODO
+        /*
        memset(fld_name, 0, sizeof(fld_name));
        strncpy(fld_name, p_fld->name, sizeof(p_fld->name));
 
@@ -147,6 +150,7 @@ void uadmin_print_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, BYTE *pParms, LO
             }                          // repeating field
 
          }                             // character field
+        */
 
        i_fld++;
        p_fld++;
