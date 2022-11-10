@@ -318,7 +318,7 @@ void* build_key_value_field_descriptor(
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
-   KVV_T *pKVV = kvv_get(pKVCTL_req, &pKV, VAL_TYPE_TXT);
+   KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
    if (pKVV == NULL)
       return NULL;
    UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
@@ -329,7 +329,7 @@ void* build_key_value_field_descriptor(
       field_descriptor->flags = YES_FLAG;
       // Set length of data.
       field_descriptor->l_data = pKVV->lVal;
-      // Set data
+      // Set data.
       memcpy(field_descriptor->data, pKVV->pVal, pKVV->plVal);
    }
    return field_descriptor;
