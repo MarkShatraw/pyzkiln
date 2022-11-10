@@ -136,7 +136,8 @@ int value(JSKV_CTL_T *pJKCtl)
             }
          break;
       case 'f':
-         printf("I'm going to try to add the value.");
+         printf("I'm going to try to add the value.\n");
+         printf("%d %d\n", (ICH(index) >= 5), (!strncmp(PCH(index), "false", 5)));
          if ((ICH(index) >= 5) && (!strncmp(PCH(index), "false", 5)))
             {
              printf("I am adding the value.");
