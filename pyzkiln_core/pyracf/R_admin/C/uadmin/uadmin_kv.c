@@ -94,7 +94,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
    omvs_segment->program = kv_get(pKVCtl_req, pKV, "program", pKVCtl_req->lKV_list, KEY_OPTIONAL);
    // check for OMVS segment fields and build OMVS segment if any found.
    if (omvs_segment->uid != NULL || omvs_segment->home != NULL || omvs_segment->program != NULL) {
-      offset_to_next_segment = uadmin_build_omvs_segment(finger, pKVCTL_req, omvs_segment, pLog);
+      offset_to_next_segment = uadmin_build_omvs_segment(finger, pKVCtl_req, omvs_segment, pLog);
       if (offset_to_next_segment == -1) {
          log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'omvs' segment.");
          return FAILURE;
@@ -318,7 +318,7 @@ void* build_key_value_field_descriptor(
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
-   KVV_T pKVV = kvv_get(pKVCTL_req, &pKV, VAL_TYPE_TXT);
+   KVV_T *pKVV = kvv_get(pKVCTL_req, &pKV, VAL_TYPE_TXT);
    if (pKVV == NULL)
       return NULL;
    UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
@@ -342,7 +342,7 @@ void* build_boolean_field_descriptor(
       KV_T *pKV,
       LOGGER_T *pLog
 ) {
-   KVV_T pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
+   KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
    if (pKVV == NULL)
       return NULL;
    UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
