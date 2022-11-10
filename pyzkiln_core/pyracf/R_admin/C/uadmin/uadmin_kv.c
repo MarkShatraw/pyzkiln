@@ -330,7 +330,7 @@ void* build_key_value_field_descriptor(
       // Set length of data.
       field_descriptor->l_data = pKVV->lVal;
       // Set data.
-      memcpy(field_descriptor->data, pKVV->pVal, pKVV->plVal);
+      memcpy(field_descriptor->data, pKVV->pVal, pKVV->lVal);
    }
    return field_descriptor;
 }
