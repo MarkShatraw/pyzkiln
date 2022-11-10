@@ -78,7 +78,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
             || base_segment->owner !=NULL 
             || base_segment->special !=NULL
       ) {
-      offset_to_next_segment = uadmin_build_base_segment(finger, pKVCTL_req, base_segment, pLog);
+      offset_to_next_segment = uadmin_build_base_segment(finger, pKVCtl_req, base_segment, pLog);
       if (offset_to_next_segment == -1) {
          log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'base' segment.");
          return FAILURE;
@@ -318,7 +318,7 @@ void* build_key_value_field_descriptor(
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
-   KVV_T pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
+   KVV_T pKVV = kvv_get(pKVCTL_req, &pKV, VAL_TYPE_TXT);
    if (pKVV == NULL)
       return NULL;
    UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
