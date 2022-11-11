@@ -129,7 +129,8 @@ int value(JSKV_CTL_T *pJKCtl)
          rc = kv_add_value(pJKCtl->pKVCtl, PCH(pinky), ICH(pinky)+1, CCSID_ASCII, VAL_TYPE_NUM);
          break;
       case 't':
-         if ((ICH(index) >= 4) && (!strncmp(PCH(index), "true", 4)))
+         POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
+         if ((ICH(index) >= 4) && (!strncmp(PCH(pinky), "true", 4)))
             {
              kv_add_value(pJKCtl->pKVCtl, "true", 4, CCSID_ASCII, VAL_TYPE_TXT);
              MOVE_INDEX_FINGER(4);
@@ -137,21 +138,15 @@ int value(JSKV_CTL_T *pJKCtl)
          break;
       case 'f':
          POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
-         printf("I'm going to try to add the value.\n");
-         printf("%d %d\n", (ICH(index) >= 5), (!strncmp(PCH(index), "false", 5)));
-         printf("%d %d\n", (ICH(index) >= 5), (!strncmp(PCH(pinky), "false", 5)));
-         char string[5];
-         memcpy(string, PCH(pinky), 5);
-         printf("%s\n", string);
          if ((ICH(index) >= 5) && (!strncmp(PCH(pinky), "false", 5)))
             {
-             printf("I am adding the value.");
              kv_add_value(pJKCtl->pKVCtl, "false", 5, CCSID_ASCII, VAL_TYPE_TXT);
              MOVE_INDEX_FINGER(5);
             }
          break;
       case 'n':
-         if ((ICH(index) >= 4) && (!strncmp(PCH(index), "null", 4)))
+         POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
+         if ((ICH(index) >= 4) && (!strncmp(PCH(pinky), "null", 4)))
             {
              kv_add_value(pJKCtl->pKVCtl, "null", 4, CCSID_ASCII, VAL_TYPE_TXT);
              MOVE_INDEX_FINGER(4);
