@@ -136,6 +136,7 @@ int value(JSKV_CTL_T *pJKCtl)
             }
          break;
       case 'f':
+         POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
          printf("I'm going to try to add the value.\n");
          printf("%d %d\n", (ICH(index) >= 5), (strncmp(PCH(index), "false", 5)));
          printf("%d %d\n", (ICH(index) >= 5), (strncmp(PCH(pinky), "false", 5)));
