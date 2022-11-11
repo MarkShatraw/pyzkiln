@@ -139,6 +139,9 @@ int value(JSKV_CTL_T *pJKCtl)
          printf("I'm going to try to add the value.\n");
          printf("%d %d\n", (ICH(index) >= 5), (strncmp(PCH(index), "false", 5)));
          printf("%d %d\n", (ICH(index) >= 5), (strncmp(PCH(pinky), "false", 5)));
+         char string[5];
+         memcpy(string, PCH(index), 5);
+         printf("%s\n", string);
          if ((ICH(index) >= 5) && (strncmp(PCH(index), "false", 5)))
             {
              printf("I am adding the value.");
