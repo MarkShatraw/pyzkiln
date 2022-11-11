@@ -143,7 +143,7 @@ int value(JSKV_CTL_T *pJKCtl)
          char string[5];
          memcpy(string, PCH(pinky), 5);
          printf("%s\n", string);
-         if ((ICH(index) >= 5) && (!strncmp(PCH(index), "false", 5)))
+         if ((ICH(index) >= 5) && (!strncmp(PCH(pinky), "false", 5)))
             {
              printf("I am adding the value.");
              kv_add_value(pJKCtl->pKVCtl, "false", 5, CCSID_ASCII, VAL_TYPE_TXT);
