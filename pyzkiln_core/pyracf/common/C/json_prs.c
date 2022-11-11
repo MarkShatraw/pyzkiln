@@ -140,7 +140,7 @@ int value(JSKV_CTL_T *pJKCtl)
          printf("%d %d\n", (ICH(index) >= 5), (strncmp(PCH(index), "false", 5)));
          printf("%d %d\n", (ICH(index) >= 5), (strncmp(PCH(pinky), "false", 5)));
          char string[20];
-         memcpy(string, PCH(index), 20);
+         memcpy(string, PCH(pinky), 20);
          printf("%s\n", string);
          if ((ICH(index) >= 5) && (strncmp(PCH(index), "false", 5)))
             {
