@@ -132,7 +132,7 @@ int value(JSKV_CTL_T *pJKCtl)
          POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
          if ((ICH(index) >= 4) && (!strncmp(PCH(pinky), "true", 4)))
             {
-             kv_add_value(pJKCtl->pKVCtl, "true", 4, CCSID_ASCII, VAL_TYPE_TXT);
+             kv_add_value(pJKCtl->pKVCtl, "true", 4, CCSID_ASCII, VAL_TYPE_BOOL);
              MOVE_INDEX_FINGER(4);
             }
          break;
@@ -140,7 +140,7 @@ int value(JSKV_CTL_T *pJKCtl)
          POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
          if ((ICH(index) >= 5) && (!strncmp(PCH(pinky), "false", 5)))
             {
-             kv_add_value(pJKCtl->pKVCtl, "false", 5, CCSID_ASCII, VAL_TYPE_TXT);
+             kv_add_value(pJKCtl->pKVCtl, "false", 5, CCSID_ASCII, VAL_TYPE_BOOL);
              MOVE_INDEX_FINGER(5);
             }
          break;
@@ -148,7 +148,7 @@ int value(JSKV_CTL_T *pJKCtl)
          POINT_FINGER(pinky, PCH(index)+ICH(index), ICH(index));
          if ((ICH(index) >= 4) && (!strncmp(PCH(pinky), "null", 4)))
             {
-             kv_add_value(pJKCtl->pKVCtl, "null", 4, CCSID_ASCII, VAL_TYPE_TXT);
+             kv_add_value(pJKCtl->pKVCtl, "null", 4, CCSID_ASCII, VAL_TYPE_NONE);
              MOVE_INDEX_FINGER(4);
             }
          break;
