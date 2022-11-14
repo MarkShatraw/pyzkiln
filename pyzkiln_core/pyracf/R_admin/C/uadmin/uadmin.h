@@ -40,7 +40,7 @@ typedef struct UADMIN_FDESC {
 // interface can use.  Not only do the arguments have to live in this
 // 31-bit area "under the bar", the argument list has to be there as
 // well.
-typedef struct CALL_ARGS {
+typedef struct UADMIN_CALL_ARGS {
    char RACF_work_area[L_RACF_WORK_AREA];
 
    int  ALET_SAF_rc;                   // return and reason codes
@@ -58,11 +58,11 @@ typedef struct CALL_ARGS {
    BYTE outbuf_subpool;
 
    char * __ptr32 pOutbuf;             // R_admin returns data here
-   } CALL_ARGS_T;
+   } UADMIN_CALL_ARGS_T;
 
 // Normal OS linkage conventions require a list of pointers for the 
 // argument list. This is what will be passed to RACF assembler service.
-typedef struct CALL_ARGS_LIST {
+typedef struct UADMIN_CALL_ARGS_LIST {
    char * __ptr32 pWork_area;
 
    int *  __ptr32 pALET_SAF_rc;
@@ -79,7 +79,7 @@ typedef struct CALL_ARGS_LIST {
    UINT * __ptr32 pACEE;
    BYTE * __ptr32 pOutbuf_subpool;
    char * __ptr32 * __ptr32 ppOutbuf;
-   } CALL_ARGS_LIST_T;
+   } UADMIN_CALL_ARGS_LIST_T;
 
 // Base segment
 const char EBCDIC_BASE_KEY[4] = { 0xc2, 0xc1 ,0xe2, 0xc5 };
@@ -112,14 +112,14 @@ const FLAG NO_FLAG = 0xd5;  // 'N' in EBCDIC
 
 // A convenience method to group the allocation of all the required
 // storage areas.
-typedef struct UNDERBAR_ARG_AREA {
-   CALL_ARGS_T args;
-   CALL_ARGS_LIST_T arg_list;
-   } UNDERBAR_ARG_AREA_T;
+typedef struct UADMIN_UNDERBAR_ARG_AREA {
+   UADMIN_CALL_ARGS_T args;
+   UADMIN_CALL_ARGS_LIST_T arg_list;
+   } UADMIN_UNDERBAR_ARG_AREA_T;
 
 // The main user administration anchor block.
 typedef struct UADMIN_CTL {
-  UNDERBAR_ARG_AREA_T *pP31Area;
+  UADMIN_UNDERBAR_ARG_AREA_T *pP31Area;
   int       lP31Area;
   LOGGER_T *pLog;
   } UADMIN_CTL_T;
@@ -129,7 +129,7 @@ KV_CTL_T *uadmin_run(R_ADMIN_CTL_T *, LOGGER_T *);
 
 // User administration to key-value list.
 RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *, KV_CTL_T *, LOGGER_T *);
-KV_CTL_T *results_to_kv(UADMIN_CTL_T *, R_ADMIN_UADMIN_PARMS_T *);
+KV_CTL_T *uadmin_results_to_kv(UADMIN_CTL_T *, R_ADMIN_UADMIN_PARMS_T *);
 
 // User administration dump methods.
 void uadmin_print(R_ADMIN_UADMIN_PARMS_T *, LOGGER_T *);
@@ -137,6 +137,6 @@ void uadmin_dump(R_ADMIN_UADMIN_PARMS_T *, LOGGER_T *);
 void uadmin_dump_args_parms(UADMIN_CTL_T *, LOGGER_T *);
 
 // Glue code to call R_admin (IRRSEQ00).
-int callRadmin(CALL_ARGS_LIST_T * __ptr32);
+int callRadmin(UADMIN_CALL_ARGS_LIST_T * __ptr32);
 
 #endif

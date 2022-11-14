@@ -42,7 +42,7 @@ const unsigned char OUTBUF_SUBPOOL = 127;
 
 
 // Local prototypes
-static UNDERBAR_ARG_AREA_T * __ptr32 alloc_31bit_area(UADMIN_CTL_T *);
+static UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 alloc_31bit_area(UADMIN_CTL_T *);
 RC build_31bit_args(UADMIN_CTL_T *, R_ADMIN_CTL_T *);
 UADMIN_CTL_T *uadmin_init(LOGGER_T *);
 UADMIN_CTL_T *uadmin_term(UADMIN_CTL_T *);
@@ -62,10 +62,10 @@ KV_CTL_T *uadmin_run(R_ADMIN_CTL_T *pRACtl, LOGGER_T *pLog)
 
         if (rc == SUCCESS)
            {
-            UNDERBAR_ARG_AREA_T * __ptr32 p31 = pUADMINCtl->pP31Area;
+            UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 p31 = pUADMINCtl->pP31Area;
 
             log_debug(pRACtl->pLog, "31-bit args are built, call RACF ...");
-            rc = callRadmin((CALL_ARGS_LIST_T * __ptr32)&(p31->arg_list));
+            rc = callRadmin((UADMIN_CALL_ARGS_LIST_T * __ptr32)&(p31->arg_list));
 
             if ((!rc) &&
                 (!p31->args.SAF_rc) &&
@@ -112,7 +112,7 @@ UADMIN_CTL_T *uadmin_init(LOGGER_T *pLog)
         log_set_name(pUADMINCtl->pLog, "uadmin");
 
         // Allocate an area in 31-bit addressable memory for calling IRRSEQ00.
-        pUADMINCtl->lP31Area = sizeof(UNDERBAR_ARG_AREA_T);
+        pUADMINCtl->lP31Area = sizeof(UADMIN_UNDERBAR_ARG_AREA_T);
         pUADMINCtl->pP31Area = alloc_31bit_area(pUADMINCtl);
 
         if (pUADMINCtl->pP31Area == NULL)
@@ -132,9 +132,9 @@ UADMIN_CTL_T *uadmin_term(UADMIN_CTL_T *pUADMINCtl)
    }                                   // uadmin_term
 
 // Allocate an area in 31-bit addressable memory for the args to call IRRSEQ00.
-static UNDERBAR_ARG_AREA_T * __ptr32 alloc_31bit_area(UADMIN_CTL_T *pUADMINCtl)
+static UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 alloc_31bit_area(UADMIN_CTL_T *pUADMINCtl)
    {
-    UNDERBAR_ARG_AREA_T * __ptr32 p31;
+    UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 p31;
 
     log_debug(pUADMINCtl->pLog, "Allocate 31-bit arg area");
     p31 = __malloc31(pUADMINCtl->lP31Area);
@@ -156,7 +156,7 @@ static UNDERBAR_ARG_AREA_T * __ptr32 alloc_31bit_area(UADMIN_CTL_T *pUADMINCtl)
 // Build the args in the 31-bit addressable area for alling IRRSEQ00.
 RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
    {
-    UNDERBAR_ARG_AREA_T * __ptr32 p31 = pUADMINCtl->pP31Area;
+    UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 p31 = pUADMINCtl->pP31Area;
     KV_CTL_T *pKVCtl_req = ra_get_kvctl(pRACtl, KV_REQ);
     RC        rc = SUCCESS;
     char      EBC_eyecatcher[4];

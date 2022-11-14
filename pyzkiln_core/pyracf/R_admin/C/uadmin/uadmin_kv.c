@@ -388,7 +388,7 @@ RC convert_to_ebcdic(char *eye_catcher, char *ascii_string, char ebcdic_buffer[]
    return SUCCESS;
 }
 
-KV_CTL_T *results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMIN_results)
+KV_CTL_T *uadmin_results_to_kv(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_UADMIN_PARMS_T *pUADMIN_results)
    {
     KV_CTL_T *pKVCtl = uadmin_kv_init(pUADMINCtl->pLog);
     RC rc = SUCCESS;
