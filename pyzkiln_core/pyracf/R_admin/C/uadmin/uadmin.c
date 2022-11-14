@@ -46,6 +46,8 @@ static UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 alloc_31bit_area(UADMIN_CTL_T *);
 RC build_31bit_args(UADMIN_CTL_T *, R_ADMIN_CTL_T *);
 UADMIN_CTL_T *uadmin_init(LOGGER_T *);
 UADMIN_CTL_T *uadmin_term(UADMIN_CTL_T *);
+// Glue code to call R_admin (IRRSEQ00).
+int callRadmin(UADMIN_CALL_ARGS_LIST_T * __ptr32);
 
 
 // -----------------------------------------------------------------------

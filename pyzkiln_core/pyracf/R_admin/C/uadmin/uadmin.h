@@ -136,7 +136,4 @@ void uadmin_print(R_ADMIN_UADMIN_PARMS_T *, LOGGER_T *);
 void uadmin_dump(R_ADMIN_UADMIN_PARMS_T *, LOGGER_T *);
 void uadmin_dump_args_parms(UADMIN_CTL_T *, LOGGER_T *);
 
-// Glue code to call R_admin (IRRSEQ00).
-int callRadmin(UADMIN_CALL_ARGS_LIST_T * __ptr32);
-
 #endif
