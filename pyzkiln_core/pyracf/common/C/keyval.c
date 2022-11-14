@@ -303,13 +303,13 @@ KVV_T *kvv_get(KV_CTL_T *pKVCtl, KV_T *pKV, BYTE val_type)
         if ((val_type != VAL_TYPE_ANY) && (pKVVal->val_type != val_type))
            {
             log_error(pKVCtl->pLog,  "(kvv_get), Expected val_type %d, got %d", val_type, pKVVal->val_type);
-            pKVVal = NULL;
+            return NULL;
            }
 
         if (pKVVal->pVal == NULL)
            {
             log_error(pKVCtl->pLog, "(kvv_get), NULL value in pKVVal");
-            pKVVal = NULL;
+            return NULL;
            }
 
        }
