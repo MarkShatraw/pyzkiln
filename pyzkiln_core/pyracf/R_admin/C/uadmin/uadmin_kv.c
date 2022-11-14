@@ -323,17 +323,15 @@ void* build_field_descriptor(
    // if key-value is 'VAL_TYPE_TXT' add key-value field descriptor.
    KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
    if (pKVV == NULL) {
-      printf("Inside if.\n");
       // if key-value is 'VAL_TYPE_BOOL' add boolean field descriptor.
       pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_BOOL);
-      printf("Got result.\n");
       if (pKVV == NULL) {
          log_error(pLog, "%s is not 'VAL_TYPE_TXT' or 'VAL_TYPE_BOOL'.", pKV->pKey);
          return NULL;
       }
-      return build_key_value_field_descriptor(eye_catcher, ebcdic_key, pKVV, pLog);
+      return build_boolean_field_descriptor(eye_catcher, ebcdic_key, pKVV, pLog);
    }
-   return build_boolean_field_descriptor(eye_catcher, ebcdic_key, pKVV, pLog);
+   return build_key_value_field_descriptor(eye_catcher, ebcdic_key, pKVV, pLog);
 }
 
 void* build_key_value_field_descriptor(
