@@ -319,6 +319,7 @@ void* build_field_descriptor(
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
+   log_debug("Creating field descriptor '%s'.", pKV->pKey);
    // if key-value is 'VAL_TYPE_TXT' add key-value field descriptor.
    KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
    if (pKVV == NULL) {
