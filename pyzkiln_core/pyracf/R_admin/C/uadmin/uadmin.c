@@ -77,7 +77,7 @@ KV_CTL_T *uadmin_run(R_ADMIN_CTL_T *pRACtl, LOGGER_T *pLog)
                 log_debug(pUADMINCtl->pLog, "Build KV list for results");
                 // dump_mem((BYTE *)p31->args.pOutbuf, sizeof(R_ADMIN_UADMIN_PARMS_T)+32,
                 //          CCSID_EBCDIC, pRACtl->pLog);
-                pKVCtl_res = results_to_kv(pUADMINCtl, (R_ADMIN_UADMIN_PARMS_T *)p31->args.pOutbuf);
+                pKVCtl_res = uadmin_results_to_kv(pUADMINCtl, (R_ADMIN_UADMIN_PARMS_T *)p31->args.pOutbuf);
                 log_set_name(pUADMINCtl->pLog, "uadmin");
                }
 

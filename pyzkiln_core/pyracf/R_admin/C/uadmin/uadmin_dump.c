@@ -255,7 +255,7 @@ void uadmin_dump_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, LOGGER_T *pLog)
 
 void uadmin_dump_args_parms(UADMIN_CTL_T *pUADMINCtl, LOGGER_T *pLog)
    {
-    UNDERBAR_ARG_AREA_T * __ptr32 p31 = pUADMINCtl->pP31Area;
+    UADMIN_UNDERBAR_ARG_AREA_T * __ptr32 p31 = pUADMINCtl->pP31Area;
 
     log_debug(pLog, "---------------------------------------------");
     log_debug(pLog, "Args (%08x), p31: %08x:", &(p31->args), p31);
