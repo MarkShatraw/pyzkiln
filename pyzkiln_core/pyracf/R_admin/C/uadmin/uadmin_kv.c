@@ -349,7 +349,10 @@ void* build_key_value_field_descriptor(
       // Set length of data.
       field_descriptor->l_data = pKVV->lVal;
       // Set data.
-      memcpy(field_descriptor->data, pKVV->pVal, pKVV->lVal);
+      field_descriptor->data = calloc(1, pKVV->lVal);
+      char ebcdic_buffer[pKVV->lVal];
+      convert_to_ebcdic(eye_catcher, pKVV->pVal, ebcdic_buffer, pKVV->lVal, pLog);
+      memcpy(field_descriptor->data, ebcdic_buffer, pKVV->lVal);
    }
    return field_descriptor;
 }
