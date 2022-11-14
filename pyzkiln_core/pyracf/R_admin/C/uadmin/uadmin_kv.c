@@ -130,7 +130,7 @@ int uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_
    offset_next_segment += base_segment_descriptor_size;
    // Add 'name' field
    if (base_segment->name != NULL) {
-      UADMIN_FDESC_T *name_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *name_field_descriptor = build_field_descriptor(
          "name", 
          EBCDIC_NAME_KEY, 
          pKVCTL_req,
@@ -148,7 +148,7 @@ int uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_
    }
    // Add 'password' field
    if (base_segment->password != NULL) {
-      UADMIN_FDESC_T *password_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *password_field_descriptor = build_field_descriptor(
          "password", 
          EBCDIC_PASSWORD_KEY, 
          pKVCTL_req,
@@ -166,7 +166,7 @@ int uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_
    }
    // Add 'owner' field
    if (base_segment->owner != NULL) {
-      UADMIN_FDESC_T *owner_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *owner_field_descriptor = build_field_descriptor(
          "owner", 
          EBCDIC_OWNER_KEY, 
          pKVCTL_req,
@@ -184,7 +184,7 @@ int uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_
    }
    // Add 'special' field
    if (base_segment->special != NULL) {
-      UADMIN_FDESC_T *special_field_descriptor = build_boolean_field_descriptor(
+      UADMIN_FDESC_T *special_field_descriptor = build_field_descriptor(
          "special", 
          EBCDIC_SPECIAL_KEY, 
          pKVCTL_req,
@@ -230,7 +230,7 @@ int uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_
    offset_next_segment += omvs_segment_descriptor_size;
    // Add 'uid' field
    if (omvs_segment->uid != NULL) {
-      UADMIN_FDESC_T *uid_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *uid_field_descriptor = build_field_descriptor(
          "uid", 
          EBCDIC_UID_KEY, 
          pKVCTL_req,
@@ -248,7 +248,7 @@ int uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_
    }
    // Add 'home' field
    if (omvs_segment->home != NULL) {
-      UADMIN_FDESC_T *home_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *home_field_descriptor = build_field_descriptor(
          "home", 
          EBCDIC_HOME_KEY, 
          pKVCTL_req,
@@ -266,7 +266,7 @@ int uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_
    }
    // Add 'program' field
    if (omvs_segment->program != NULL) {
-      UADMIN_FDESC_T *program_field_descriptor = build_key_value_field_descriptor(
+      UADMIN_FDESC_T *program_field_descriptor = build_field_descriptor(
          "program", 
          EBCDIC_PROGRAM_KEY, 
          pKVCTL_req,
@@ -311,16 +311,33 @@ void* build_segment_descriptor(const char *ebcdic_key, int field_count) {
    return segment_descriptor;
 }
 
-void* build_key_value_field_descriptor(
+void* build_field_descriptor(
       char *eye_catcher, 
       const char *ebcdic_key, 
       KV_CTL_T *pKVCTL_req, 
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
+   // if key-value is 'VAL_TYPE_TXT' add key-value field descriptor.
    KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
-   if (pKVV == NULL)
-      return NULL;
+   if (pKVV == NULL) {
+      // if key-value is 'VAL_TYPE_BOOL' add boolean field descriptor.
+      pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_BOOL);
+      if (pKVV == NULL) {
+         log_error(pLog, "%s is not 'VAL_TYPE_TXT' or 'VAL_TYPE_BOOL'.", pKV->pKey);
+         return NULL;
+      }
+      return build_key_value_field_descriptor(eye_catcher, ebcdic_key, pKVV, pLog);
+   }
+   return build_boolean_field_descriptor(eye_catcher, ebcdic_key, pKVV, pLog);
+}
+
+void* build_key_value_field_descriptor(
+      char *eye_catcher, 
+      const char *ebcdic_key, 
+      KVV_T *pKVV,
+      LOGGER_T *pLog
+) {
    UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
    if (field_descriptor != NULL) {
       // Set name/key
@@ -338,22 +355,21 @@ void* build_key_value_field_descriptor(
 void* build_boolean_field_descriptor(
       char * eye_catcher, 
       const char *ebcdic_key, 
-      KV_CTL_T *pKVCTL_req, 
-      KV_T *pKV,
+      KVV_T *pKVV,
       LOGGER_T *pLog
 ) {
-   KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
-   if (pKVV == NULL)
-      return NULL;
    UADMIN_FDESC_T *field_descriptor = calloc(1, sizeof(UADMIN_FDESC_T));
    if (field_descriptor != NULL) {
       // Set name/key
       memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
-      // Set boolean value
-      // Set to always yes for now. might need to come up with a smarter way later...
-      field_descriptor->flags = YES_FLAG;
-      // Set length of data.
-      field_descriptor->l_data = pKVV->lVal;
+      // Set boolean 'true' (set 'Y')
+      if ((pKVV->lVal == 4) && (!strncmp(pKVV->pVal, "true", 4)))
+         field_descriptor->flags = YES_FLAG;
+      // Set boolean 'false' (set 'N')
+      else if ((pKVV->lVal == 5) && (!strncmp(pKVV->pVal, "false", 5)))
+         field_descriptor->flags = NO_FLAG;
+      // Set length of data to 0 since this is a boolean field.
+      field_descriptor->l_data = 0;
       // No data since this is a boolean field.
    }
    return field_descriptor;
