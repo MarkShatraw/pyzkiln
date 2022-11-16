@@ -218,6 +218,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         log_error(pUADMINCtl->pLog, "No input request to process.");
         return WARNING;
        }
-
-    return rc;
+    // Before we actually try to call RACF, let verify that the data looks ok first.
+    return FAILURE;
+    //return rc;
    }
