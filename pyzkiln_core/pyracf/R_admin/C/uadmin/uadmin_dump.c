@@ -121,7 +121,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           // Field data located at the end of the field descriptor.
           field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
           // Create temporary buffer that is the size of field data plus one to make it null terminated.
-          field_data_tmp = calloc(1, p_fld->l_data + 1);
+          field_data_tmp = calloc(p_fld->l_data + 1, sizeof(char));
           // copy field_data to field_data_tmp as ASCII.
           tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
           printf("  data: %s", field_data_tmp);
