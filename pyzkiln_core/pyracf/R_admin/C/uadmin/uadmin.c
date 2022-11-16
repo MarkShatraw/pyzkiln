@@ -116,7 +116,7 @@ UADMIN_CTL_T *uadmin_init(LOGGER_T *pLog)
         // Allocate an area in 31-bit addressable memory for calling IRRSEQ00.
         // We will want to calculate the size of the 31 bit area later, but 
         // for now let's just allocate enough space to get everything working.
-        pUADMINCtl->lP31Area = 4096;
+        pUADMINCtl->lP31Area = 16384;
         pUADMINCtl->pP31Area = alloc_31bit_area(pUADMINCtl);
 
         if (pUADMINCtl->pP31Area == NULL)
