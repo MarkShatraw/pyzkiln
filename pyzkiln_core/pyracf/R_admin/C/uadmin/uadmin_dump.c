@@ -14,10 +14,13 @@
 #include "r_admin.h"
 #include "uadmin.h"
 #include "irrpcomp.h"
+#include "transcode.h"
+
+const iconv_t CD_NO_TRANSCODE  = (iconv_t)0x00000000;
 
 // Local prototypes
-void uadmin_print_segments(R_ADMIN_SDESC_T *, int, BYTE *, LOGGER_T *);
-void uadmin_print_fields(R_ADMIN_FDESC_T *, int, BYTE *, LOGGER_T *);
+void uadmin_print_segments(BYTE *, int, BYTE *, LOGGER_T *);
+void* uadmin_print_fields(BYTE *, int, BYTE *, LOGGER_T *);
 void uadmin_dump_segments(R_ADMIN_SDESC_T *, int, LOGGER_T *);
 void uadmin_dump_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 void uadmin_dump_args_parms(UADMIN_CTL_T *, LOGGER_T *);
@@ -35,8 +38,9 @@ void uadmin_print(R_ADMIN_UADMIN_PARMS_T *pParms, LOGGER_T *pLog)
     char userid[8];                    // vars for null-terminating strings
     BYTE *finger;                      // current memory location
 
+    // clear userid buffer and copy userid as ASCII to it.
     memset(userid, 0, sizeof(userid));
-    strncpy(userid, pParms->userid, sizeof(pParms->userid));
+    tc_e2a(pParms->userid, &(userid[0]), sizeof(pParms->userid), pLog);
 
     printf("User administration parms (%08x)\n", pParms);
     printf("   l_userid: %d\n",pParms->l_userid);
@@ -49,113 +53,87 @@ void uadmin_print(R_ADMIN_UADMIN_PARMS_T *pParms, LOGGER_T *pLog)
     // The segments start at the end of R_ADMIN_UADMIN_PARMS_T.
     finger = (BYTE *)pParms + sizeof(R_ADMIN_UADMIN_PARMS_T);
 
-    uadmin_print_segments((R_ADMIN_SDESC_T *)finger, pParms->n_segs, (BYTE *)pParms, pLog);
+    uadmin_print_segments(finger, pParms->n_segs, (BYTE *)pParms, pLog);
    }                                   // uadmin_print_output
 
-void uadmin_print_segments(R_ADMIN_SDESC_T *p_sdesc, int nSegments, BYTE *pParms, LOGGER_T *pLog)
+void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *pLog)
    {                                   // uadmin_print_segments
     int i_seg = 1;
     char seg_name[9];                  // var for null-terminating strings
-    R_ADMIN_SDESC_T *p_seg = p_sdesc;
+    UADMIN_SDESC_T *p_seg;             // pointer to field descriptor.
 
     // keep looping until there are no segments left.
     while(i_seg <= nSegments)
       {
-       BYTE *finger = (BYTE *)p_seg + p_seg->off_fdesc_1;
+       // Cast finger to a (UADMIN_SDESC_T)
+       p_seg = (UADMIN_SDESC_T *)finger;
 
+       // clear seg_name buffer and copy name as ASCII to it.
        memset(seg_name, 0, sizeof(seg_name));
-       strncpy(seg_name, p_seg->name, sizeof(p_seg->name));
+       tc_e2a(p_seg->name, &(seg_name[0]), sizeof(p_seg->name), pLog);
 
        printf("Segment %d\n", i_seg);
        printf("   name:             %s\n",seg_name);
-       printf("   flags:            %08x\n",p_seg->flags);
+       printf("   flag:             %02x\n",p_seg->flags);
        printf("   num fields:       %d\n",p_seg->nFields);
-       printf("   off field desc 1: %d\n",p_seg->off_fdesc_1);
 
-       // If this is the last segment, then fields follow immediately, 
-       // otherwise, they are at the offset in this segment descriptor.
-       if (i_seg <= nSegments)
-          finger = (BYTE *)p_seg + sizeof(R_ADMIN_SDESC_T);
-       else
-          finger = (BYTE *)p_seg + p_seg->off_fdesc_1;
-       uadmin_print_fields((R_ADMIN_FDESC_T *)finger, p_seg->nFields, pParms, pLog);
-
+       // For UADMIN, we all of the and all of the fields that follow.
+       // Return value should be a pointer to the start of the next segment.
+       finger = uadmin_print_fields(finger, p_seg->nFields, pParms, pLog);
        i_seg++;
-       p_seg++;
       }
 
    }                                   // uadmin_print_segments
 
-void uadmin_print_fields(R_ADMIN_FDESC_T *p_fdesc, int nFields, BYTE *pParms, LOGGER_T *pLog)
+void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLog)
    {                                   // uadmin_print_fields
     int i_fld = 1;
     char fld_name[9];                  // var for null-terminating strings
-    R_ADMIN_FDESC_T *p_fld = p_fdesc;
+    char * field_data;                 // pointer to field data in 31 bit area.
+    char * field_data_tmp;             // pointer for temporary buffer used for displaying field data.
+    UADMIN_FDESC_T * p_fld;            // pointer to field descriptor.        
 
     while(i_fld <= nFields)
       {
-        printf("TODO");
-        // TODO
-        /*
+       // Cast finger to a (UADMIN_FDESC_T)
+       p_fld = (UADMIN_FDESC_T *)finger;
+       // Display field name
+       // clear fld_name buffer and copy name as ASCII to it.
        memset(fld_name, 0, sizeof(fld_name));
-       strncpy(fld_name, p_fld->name, sizeof(p_fld->name));
-
-       printf("Field %d (R_ADMIN_FDESC_T)\n", i_fld);
+       tc_e2a(p_fld->name, &(fld_name[0]), sizeof(p_fld->name), pLog);
+       printf("Field %d (UADMIN_FDESC_T)\n", i_fld);
        printf("   name:  %s\n",fld_name);
 
-       printf("   type: (%04x)  ",p_fld->type);
-       if (p_fld->type & t_boolean_field)
-         printf("  boolean");
-       else
-         printf("  character");
-       if (p_fld->type & t_mbr_repeat_group)
-         printf(", repeat group member ");
-       if (p_fld->type & t_repeat_field_hdr)
-         printf(", repeat field header ");
+       // Display flag
+       printf("   flag: (%2x)",p_fld->flag);
+       if (p_fld->flags == YES_FLAG) {
+          printf("    YES");
+       }
+       elseif (p_fld->flags == NO_FLAG) {
+          printf("    NO");
+       }
+       else {
+          printf("    ??");
+       }
        printf("\n");
-
-       printf("   flags: (%08x)",p_fld->flags);
-       if (p_fld->flags & f_output_only)
-          printf("    output only");
-       printf("\n");
-
-       if (p_fld->type & t_boolean_field)
-         {                              // boolean field type
-          if (p_fld->flags & f_boolean_field)
-            printf("     TRUE\n");
-          else
-            printf("     FALSE\n");
-         }                             // boolean field type
-
-       else
-         {                             // character field
-
-          if (!(p_fld->type & t_repeat_field_hdr))
-            {                          // single value field
-             char content[1025];       // null-terminated string
-             int l_content = sizeof(content);
-
-             // Null-terminate, and clip the size of the content if necessary.
-             memset(content, 0, sizeof(content));
-             if (p_fld->len_rpt.l_fld_data < sizeof(content))
-               l_content = p_fld->len_rpt.l_fld_data;
-             strncpy(content, ((char *)pParms)+p_fld->off_rpt.off_fld_data, l_content);
-             printf("   content: %s\n", content);
-            }                          // single value field
-
-          else
-            {                          // repeating field
-             printf("   num repeat grps:  %d\n",p_fld->len_rpt.n_repeat_grps);
-             printf("   num repeat elems: %d\n",p_fld->off_rpt.n_repeat_elems);
-            }                          // repeating field
-
-         }                             // character field
-        */
-
+       printf("  l_data: %d", p_fld->l_data);
+       if (p_fld->l_data != 0) {
+          // Field data located at the end of the field descriptor.
+          field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
+          // Create temporary buffer that is the size of field data plus one to make it null terminated.
+          field_data_tmp = calloc(1, p_fld->l_data + 1);
+          // copy field_data to field_data_tmp as ASCII.
+          tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
+          printf("  data: %s", field_data_tmp);
+          free(field_data_tmp);
+       }
+       else {
+          printf("  data: N/A (boolean field only)")
+       }
+       // Set pointer to the beginning of the next field/segment descriptor.
+       finger += sizeof(UADMIN_FDESC_T) + p_fld->l_data;
        i_fld++;
-       p_fld++;
       }
-
    }                                   // uadmin_print_fields
 
 

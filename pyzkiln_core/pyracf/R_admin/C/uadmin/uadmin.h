@@ -26,14 +26,21 @@
 // Constants
 #define L_RACF_WORK_AREA 1024
 
-// do these need reserved fields???
+// UADMIN Segment descriptor
+typedef struct UADMIN_SDESC {
+   char     name[8];                 // segment name, upper case, blank padded
+   FLAG     flag;                    // EBCDIC byte 'Y' or 'N'
+   USHORT   nFields;                 // number of fields
+                                     // start of next segment descriptor
+   } UADMIN_SDESC_T;
+
 // UADMIN Field descriptor
 typedef struct UADMIN_FDESC {
    char             name[8];     // field name, upper case, blank padded
-   UINT             flags;       // EBCDIC byte 'Y' or 'N'
-   int              l_data;      // size of data
-   char *           data;        // data
-                                 // start of next field descriptor
+   FLAG             flag;        // EBCDIC byte 'Y' or 'N'
+   USHORT           l_data;      // size of data
+                                 // variable length data
+                                 // then start of next field descriptor
    } UADMIN_FDESC_T;
 
 // We have to marshall our arguments into a 31-bit area that the RACF 

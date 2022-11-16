@@ -114,7 +114,9 @@ UADMIN_CTL_T *uadmin_init(LOGGER_T *pLog)
         log_set_name(pUADMINCtl->pLog, "uadmin");
 
         // Allocate an area in 31-bit addressable memory for calling IRRSEQ00.
-        pUADMINCtl->lP31Area = sizeof(UADMIN_UNDERBAR_ARG_AREA_T);
+        // We will want to calculate the size of the 31 bit area later, but 
+        // for now let's just allocate enough space to get everything working.
+        pUADMINCtl->lP31Area = 4096;
         pUADMINCtl->pP31Area = alloc_31bit_area(pUADMINCtl);
 
         if (pUADMINCtl->pP31Area == NULL)
@@ -177,9 +179,6 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         p31->args.func_code      = pRACtl->iFunc_type;
         p31->args.ACEE           = ACEE;
         p31->args.outbuf_subpool = OUTBUF_SUBPOOL;
-
-        //tc_a2e("UADMIN", &(EBC_eyecatcher[0]), sizeof(EBC_eyecatcher), pUADMINCtl->pLog);
-        //memcpy(p31->args.uadmin_parms.eyecatcher, EBC_eyecatcher, sizeof(EBC_eyecatcher));
 
         // Dump key value structure
         kv_print(pKVCtl_req);
