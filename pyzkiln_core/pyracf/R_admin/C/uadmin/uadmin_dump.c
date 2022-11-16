@@ -77,7 +77,9 @@ void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *
        printf("   flag:             %02x\n",p_seg->flag);
        printf("   num fields:       %d\n",p_seg->nFields);
 
-       // For UADMIN, we all of the and all of the fields that follow.
+       // For UADMIN, all of the fields associated with a segment follow follow it.
+       // Set finger pointer to start of first field descriptor.
+       finger += sizeof(UADMIN_SDESC_T);
        // Return value should be a pointer to the start of the next segment.
        finger = uadmin_print_fields(finger, p_seg->nFields, pParms, pLog);
        i_seg++;
@@ -123,7 +125,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           // Create temporary buffer that is the size of field data plus one to make it null terminated.
           field_data_tmp = calloc(p_fld->l_data + 1, sizeof(char));
           // copy field_data to field_data_tmp as ASCII.
-          tc_e2a(&(field_data[0]), &(field_data_tmp[0]), p_fld->l_data, pLog);
+          tc_e2a(field_data, field_data_tmp[0], p_fld->l_data, pLog);
           printf("  data: %s", field_data_tmp);
           free(field_data_tmp);
        }
