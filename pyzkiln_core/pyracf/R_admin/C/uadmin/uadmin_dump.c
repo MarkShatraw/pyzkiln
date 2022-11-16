@@ -118,7 +118,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           printf("    ??");
        }
        printf("\n");
-       printf("  l_data: %d", p_fld->l_data);
+       printf("   l_data: %d\n", p_fld->l_data);
        if (p_fld->l_data != 0) {
           // Field data located at the end of the field descriptor.
           field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
@@ -126,11 +126,11 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           field_data_tmp = calloc(p_fld->l_data + 1, sizeof(char));
           // copy field_data to field_data_tmp as ASCII.
           tc_e2a(field_data, field_data_tmp[0], p_fld->l_data, pLog);
-          printf("  data: %s", field_data_tmp);
+          printf("  data: %s\n", field_data_tmp);
           free(field_data_tmp);
        }
        else {
-          printf("  data: N/A (boolean field only)");
+          printf("  data: N/A (boolean field only)\n");
        }
        // Set pointer to the beginning of the next field/segment descriptor.
        finger += sizeof(UADMIN_FDESC_T) + p_fld->l_data;
