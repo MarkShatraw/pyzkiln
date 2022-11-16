@@ -72,7 +72,7 @@ void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *
        memset(seg_name, 0, sizeof(seg_name));
        tc_e2a(p_seg->name, &(seg_name[0]), sizeof(p_seg->name), pLog);
 
-       printf("Segment %d\n", i_seg);
+       printf("Segment %d (UADMIN_SDESC_T)\n", i_seg);
        printf("   name:             %s\n",seg_name);
        printf("   flag:             %02x\n",p_seg->flag);
        printf("   num fields:       %d\n",p_seg->nFields);
@@ -119,7 +119,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
        printf("  l_data: %d", p_fld->l_data);
        if (p_fld->l_data != 0) {
           // Field data located at the end of the field descriptor.
-          field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
+          field_data = (char *)(finger + sizeof(UADMIN_FDESC_T));
           // Create temporary buffer that is the size of field data plus one to make it null terminated.
           field_data_tmp = (char *)calloc(1, p_fld->l_data + 1);
           // copy field_data to field_data_tmp as ASCII.
