@@ -190,9 +190,7 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
          log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'special' field.");
          return NULL;
       }
-      printf("built special field descriptor\n");
    }
-   printf("Done building base segment\n");
    // Return value should be finger pointer to where next segment descriptor should be created.
    return finger;
 }
@@ -211,12 +209,13 @@ USHORT count_base_segment_fields(BASE_SEGMENT_T *base_segment) {
 }
 
 void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_T *omvs_segment, LOGGER_T *pLog) {
-   printf("Trying to build OMVS segment\n");
    // Build OMVS segment header
    USHORT field_count = count_omvs_segment_fields(omvs_segment);
    // Create segment descriptor at location where finger is pointing.
    // Return value should be finger pointer to where the first field descriptor should be cerated.
-   finger = build_segment_descriptor((UADMIN_SDESC_T *) finger, EBCDIC_OMVS_KEY, field_count);
+   printf("Trying to build OMVS segment descriptor\n");
+   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, EBCDIC_OMVS_KEY, field_count);
+   printf("OMVS segment descriptor built\n");
    if (finger == NULL) {
       log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'omvs' segment.");
       return NULL;
