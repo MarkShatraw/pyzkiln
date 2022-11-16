@@ -190,7 +190,9 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
          log_error(pLog, "Unable to create 'UADMIN_FDESC_T' for 'special' field.");
          return NULL;
       }
+      printf("built special field descriptor\n");
    }
+   printf("Done building base segment\n");
    // Return value should be finger pointer to where next segment descriptor should be created.
    return finger;
 }
@@ -209,6 +211,7 @@ USHORT count_base_segment_fields(BASE_SEGMENT_T *base_segment) {
 }
 
 void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_T *omvs_segment, LOGGER_T *pLog) {
+   printf("Trying to build OMVS segment\n");
    // Build OMVS segment header
    USHORT field_count = count_omvs_segment_fields(omvs_segment);
    // Create segment descriptor at location where finger is pointing.
@@ -353,7 +356,6 @@ void* build_boolean_field_descriptor(
       KVV_T *pKVV,
       LOGGER_T *pLog
 ) {
-   printf("Trying to build boolean field descriptor");
    // Set name/key
    memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
    // Set boolean 'true' (set 'Y')
@@ -368,7 +370,6 @@ void* build_boolean_field_descriptor(
    // Since these is no field data just return the pointer to the field descriptor
    // plus the size of one UADMIN_FDESC_T.
    // This return value is a pointer to the next segment/field descriptor.
-   printf("Boolean field descriptor built.");
    return (BYTE *)field_descriptor + sizeof(UADMIN_FDESC_T);
 }
 
