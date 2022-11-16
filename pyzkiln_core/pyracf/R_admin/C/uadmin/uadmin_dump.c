@@ -82,6 +82,9 @@ void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *
        finger += sizeof(UADMIN_SDESC_T);
        // Return value should be a pointer to the start of the next segment.
        finger = uadmin_print_fields(finger, p_seg->nFields, pParms, pLog);
+       if (finger == NULL)
+          log_error(pLog, "Something went wrong while creating segments.");
+          return;
        i_seg++;
       }
 
@@ -124,6 +127,8 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
           // Create temporary buffer that is the size of field data plus one to make it null terminated.
           field_data_tmp = calloc(p_fld->l_data + 1, sizeof(char));
+          if (field_data_tmp == NULL) 
+             return NULL;
           // copy field_data to field_data_tmp as ASCII.
           tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
           printf("  data: %s\n", field_data_tmp);
