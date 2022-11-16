@@ -74,7 +74,7 @@ void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *
 
        printf("Segment %d\n", i_seg);
        printf("   name:             %s\n",seg_name);
-       printf("   flag:             %02x\n",p_seg->flags);
+       printf("   flag:             %02x\n",p_seg->flag);
        printf("   num fields:       %d\n",p_seg->nFields);
 
        // For UADMIN, we all of the and all of the fields that follow.
@@ -106,10 +106,10 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
 
        // Display flag
        printf("   flag: (%2x)",p_fld->flag);
-       if (p_fld->flags == YES_FLAG) {
+       if (p_fld->flag == YES_FLAG) {
           printf("    YES");
        }
-       elseif (p_fld->flags == NO_FLAG) {
+       else if (p_fld->flag == NO_FLAG) {
           printf("    NO");
        }
        else {
@@ -121,14 +121,14 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           // Field data located at the end of the field descriptor.
           field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
           // Create temporary buffer that is the size of field data plus one to make it null terminated.
-          field_data_tmp = calloc(1, p_fld->l_data + 1);
+          field_data_tmp = (char *)calloc(1, p_fld->l_data + 1);
           // copy field_data to field_data_tmp as ASCII.
           tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
           printf("  data: %s", field_data_tmp);
           free(field_data_tmp);
        }
        else {
-          printf("  data: N/A (boolean field only)")
+          printf("  data: N/A (boolean field only)");
        }
        // Set pointer to the beginning of the next field/segment descriptor.
        finger += sizeof(UADMIN_FDESC_T) + p_fld->l_data;
