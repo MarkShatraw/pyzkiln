@@ -303,6 +303,7 @@ void* build_field_descriptor(
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
+   printf("Key: %08x\n", ebcdic_key);
    log_debug(pLog, "Creating field descriptor '%s'.", pKV->pKey);
    // if key-value is 'VAL_TYPE_TXT' add key-value field descriptor.
    KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
