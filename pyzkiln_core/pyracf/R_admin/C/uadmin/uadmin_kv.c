@@ -313,9 +313,11 @@ void* build_field_descriptor(
          log_error(pLog, "%s is not 'VAL_TYPE_TXT' or 'VAL_TYPE_BOOL'.", pKV->pKey);
          return NULL;
       }
+      kvv_print(pKVCTL_req, pKVV);
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       return build_boolean_field_descriptor(field_descriptor, eye_catcher, ebcdic_key, pKVV, pLog);
    }
+   kvv_print(pKVCTL_req, pKVV);
    // Return value should be finger pointer to where next field/segment descriptor should be created.
    return build_key_value_field_descriptor(field_descriptor, eye_catcher, ebcdic_key, pKVV, pLog);
 }
@@ -335,7 +337,9 @@ void* build_key_value_field_descriptor(
    field_descriptor->l_data = (USHORT)pKVV->lVal;
    // convert data to EBCDIC.
    char ebcdic_buffer[pKVV->lVal];
-   convert_to_ebcdic(eye_catcher, pKVV->pVal, ebcdic_buffer, pKVV->lVal, pLog);
+   RC rc = convert_to_ebcdic(eye_catcher, pKVV->pVal, ebcdic_buffer, pKVV->lVal, pLog);
+   if (rc != SUCCESS)
+      return NULL;
    // Set field data pointer to end of field descriptor.
    char * field_data = (char *)field_descriptor + sizeof(UADMIN_FDESC_T);
    // copy EBCDIC data to memory location when field data pointer is pointing.
