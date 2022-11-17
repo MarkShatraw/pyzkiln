@@ -314,11 +314,9 @@ void* build_field_descriptor(
          log_error(pLog, "%s is not 'VAL_TYPE_TXT' or 'VAL_TYPE_BOOL'.", pKV->pKey);
          return NULL;
       }
-      kvv_print(pKVCTL_req, pKVV);
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       return build_boolean_field_descriptor(field_descriptor, eye_catcher, ebcdic_key, pKVV, pLog);
    }
-   kvv_print(pKVCTL_req, pKVV);
    // Return value should be finger pointer to where next field/segment descriptor should be created.
    return build_key_value_field_descriptor(field_descriptor, eye_catcher, ebcdic_key, pKVV, pLog);
 }
