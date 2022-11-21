@@ -286,8 +286,8 @@ USHORT count_omvs_segment_fields(OMVS_SEGMENT_T *omvs_segment) {
 }
 
 void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, const char *ebcdic_key, USHORT field_count) {
-   // Set name/key
-   memcpy(segment_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
+   // Set name/key (always size 8)
+   memcpy(segment_descriptor->name, ebcdic_key, 8);
    // Set flag to 'Y'
    segment_descriptor->flag = YES_FLAG;
    // Set number of fields
@@ -329,8 +329,8 @@ void* build_key_value_field_descriptor(
       KVV_T *pKVV,
       LOGGER_T *pLog
 ) {
-   // Set name/key
-   memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
+   // Set name/key (always size 8)
+   memcpy(field_descriptor->name, ebcdic_key, 8);
    // Set flag to 'Y'
    field_descriptor->flag = YES_FLAG;
    // Set length of data.
@@ -357,8 +357,8 @@ void* build_boolean_field_descriptor(
       KVV_T *pKVV,
       LOGGER_T *pLog
 ) {
-   // Set name/key
-   memcpy(field_descriptor->name, ebcdic_key, sizeof(ebcdic_key));
+   // Set name/key (always size 8)
+   memcpy(field_descriptor->name, ebcdic_key, 8);
    // Set boolean 'true' (set 'Y')
    if ((pKVV->lVal == 4) && (!strncmp(pKVV->pVal, "true", 4)))
       field_descriptor->flag = YES_FLAG;
