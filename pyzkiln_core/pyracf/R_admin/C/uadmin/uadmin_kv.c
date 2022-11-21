@@ -119,7 +119,7 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    USHORT field_count = count_base_segment_fields(base_segment);
    // Create segment descriptor at location where finger is pointing.
    // Return value should be finger pointer to where the first field descriptor should be cerated.
-   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, EBCDIC_BASE_KEY, field_count);
+   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, *EBCDIC_BASE_KEY, field_count);
    if (finger == NULL) {
       log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'base' segment.");
       return NULL;
