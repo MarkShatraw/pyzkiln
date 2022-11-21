@@ -26,6 +26,14 @@ void uadmin_dump_fields(R_ADMIN_FDESC_T *, int, LOGGER_T *);
 void uadmin_dump_args_parms(UADMIN_CTL_T *, LOGGER_T *);
 
 
+void uadmin_raw_dump(R_ADMIN_UADMIN_PARMS_T *pParms) {
+   char* bytes = (char*)pParms;
+   FILE* dump_file = fopen("uadmin.dump", "wb+");
+   fwrite(bytes, 1, sizeof(bytes), dump_file);
+   fclose(dump_file);
+}
+
+
 //
 // Formatted print of user administration function control blocks.
 // This includes the returned parameters control block and all 

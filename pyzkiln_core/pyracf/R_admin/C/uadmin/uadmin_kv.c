@@ -109,6 +109,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
    p_uadmin_parms->l_userid = l_userid;
    p_uadmin_parms->n_segs = n_segs;
    // Leave off_seg1 alone.
+   uadmin_raw_dump(p_uadmin_parms);
    uadmin_print(p_uadmin_parms, pLog);
    return SUCCESS;
 }
