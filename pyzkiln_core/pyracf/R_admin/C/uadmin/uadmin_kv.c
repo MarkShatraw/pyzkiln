@@ -278,7 +278,7 @@ void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMEN
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "program", 
-         ebcidc_program_key, 
+         ebcdic_program_key, 
          pKVCTL_req,
          omvs_segment->program, 
          pLog
