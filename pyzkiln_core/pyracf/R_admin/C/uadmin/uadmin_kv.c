@@ -290,7 +290,7 @@ void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, const char *e
    memcpy(segment_descriptor->name, ebcdic_key, 8);
    printf("name: %d", &segment_descriptor->name);
    // Set flag to 'Y'
-   segment_descriptor->flag = (char)YES_FLAG;
+   segment_descriptor->flag = YES_FLAG;
    printf("flag: %d", &segment_descriptor->flag);
    // Set number of fields
    segment_descriptor->nFields = field_count;
