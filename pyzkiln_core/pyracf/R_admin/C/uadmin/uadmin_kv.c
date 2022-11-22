@@ -214,7 +214,7 @@ void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMEN
    USHORT field_count = count_omvs_segment_fields(omvs_segment);
    // Create segment descriptor at location where finger is pointing.
    // Return value should be finger pointer to where the first field descriptor should be cerated.
-   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, EBCDIC_OMVS_KEY, field_count);
+   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, &EBCDIC_OMVS_KEY, field_count);
    if (finger == NULL) {
       log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'omvs' segment.");
       return NULL;
