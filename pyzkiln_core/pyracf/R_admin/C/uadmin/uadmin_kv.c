@@ -293,11 +293,12 @@ void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, const char *e
    segment_descriptor->flag = YES_FLAG;
    printf("flag: %d", &segment_descriptor->flag);
    // Set number of fields
-   segment_descriptor->nFields = field_count;
-   printf("nFields: %d", &segment_descriptor->nFields);
+   memcpy((BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T), &field_count, 2);
+   //segment_descriptor->nFields = field_count;
+   printf("nFields: %d", (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T));
    // Return value is a pointer to the location where the first field descriptor should be created.
-   printf("next: %d",  (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T));
-   return (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T);
+   printf("next: %d",  (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T) + 2);
+   return (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T) + 2;
 }
 
 void* build_field_descriptor(
