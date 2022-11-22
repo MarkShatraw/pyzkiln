@@ -117,9 +117,9 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
 void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_T *base_segment, LOGGER_T *pLog) {
    // Build BASE segment descriptor
    USHORT field_count = count_base_segment_fields(base_segment);
+   char ebcdic_base_key[8] = { 0xc2, 0xc1 ,0xe2, 0xc5, 0x40, 0x40, 0x40, 0x40 };
    // Create segment descriptor at location where finger is pointing.
    // Return value should be finger pointer to where the first field descriptor should be cerated.
-   char ebcdic_base_key[] = { 0xc2, 0xc1 ,0xe2, 0xc5, 0x40, 0x40, 0x40, 0x40 };
    finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, ebcdic_base_key, field_count);
    if (finger == NULL) {
       log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'base' segment.");
@@ -127,12 +127,13 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    }
    // Add 'name' field
    if (base_segment->name != NULL) {
+      char ebcdic_name_key[8] = { 0xd5, 0xc1, 0xd4, 0xc5, 0x40, 0x40, 0x40, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "name", 
-         EBCDIC_NAME_KEY, 
+         ebcdic_name_key, 
          pKVCTL_req,
          base_segment->name, 
          pLog
