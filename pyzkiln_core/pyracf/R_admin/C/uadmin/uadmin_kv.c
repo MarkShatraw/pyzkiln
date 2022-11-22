@@ -121,7 +121,7 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    // Return value should be finger pointer to where the first field descriptor should be cerated.
    char ebcdic_base_key[] = (char *)calloc(8, sizeof(char));
    ebcdic_base_key = { 0xc2, 0xc1 ,0xe2, 0xc5, 0x40, 0x40, 0x40, 0x40 };
-   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, &ebcdic_base_key, field_count);
+   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, ebcdic_base_key, field_count);
    if (finger == NULL) {
       log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'base' segment.");
       return NULL;
