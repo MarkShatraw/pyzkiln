@@ -30,10 +30,10 @@ void* uadmin_build_base_segment(BYTE *, KV_CTL_T*, BASE_SEGMENT_T *, LOGGER_T *)
 USHORT count_base_segment_fields(BASE_SEGMENT_T *);
 void* uadmin_build_omvs_segment(BYTE *, KV_CTL_T*, OMVS_SEGMENT_T *, LOGGER_T *);
 USHORT count_omvs_segment_fields(OMVS_SEGMENT_T *);
-void* build_segment_descriptor(UADMIN_SDESC_T *, const char *, USHORT);
-void* build_field_descriptor(UADMIN_FDESC_T *, char *, const char *, KV_CTL_T *, KV_T *, LOGGER_T *);
-void* build_key_value_field_descriptor(UADMIN_FDESC_T *, char *, const char *, KVV_T *, LOGGER_T *);
-void* build_boolean_field_descriptor(UADMIN_FDESC_T *, char*, const char *, KVV_T *, LOGGER_T *);
+void* build_segment_descriptor(UADMIN_SDESC_T *, char *, USHORT);
+void* build_field_descriptor(UADMIN_FDESC_T *, char *, char *, KV_CTL_T *, KV_T *, LOGGER_T *);
+void* build_key_value_field_descriptor(UADMIN_FDESC_T *, char *, char *, KVV_T *, LOGGER_T *);
+void* build_boolean_field_descriptor(UADMIN_FDESC_T *, char*, char *, KVV_T *, LOGGER_T *);
 RC convert_to_ebcdic(char *, char *, char [], int, LOGGER_T *);
 KV_CTL_T *uadmin_kv_init(LOGGER_T *);
 KV_CTL_T *uadmin_kv_term(KV_CTL_T *);
@@ -117,6 +117,7 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
 void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_T *base_segment, LOGGER_T *pLog) {
    // Build BASE segment descriptor
    USHORT field_count = count_base_segment_fields(base_segment);
+   // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
    char ebcdic_base_key[8] = { 0xc2, 0xc1 ,0xe2, 0xc5, 0x40, 0x40, 0x40, 0x40 };
    // Create segment descriptor at location where finger is pointing.
    // Return value should be finger pointer to where the first field descriptor should be cerated.
@@ -127,6 +128,7 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    }
    // Add 'name' field
    if (base_segment->name != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
       char ebcdic_name_key[8] = { 0xd5, 0xc1, 0xd4, 0xc5, 0x40, 0x40, 0x40, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
@@ -145,12 +147,14 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    }
    // Add 'password' field
    if (base_segment->password != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+      char ebcdic_password_key[8] = { 0xd7, 0xc1, 0xe2, 0xe2, 0xe6, 0xd6, 0xd9, 0xc4 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "password", 
-         EBCDIC_PASSWORD_KEY, 
+         ebcdic_password_key, 
          pKVCTL_req,
          base_segment->password, 
          pLog
@@ -162,12 +166,14 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    }
    // Add 'owner' field
    if (base_segment->owner != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+      char ebcdic_owner_key[8] = { 0xd6, 0xe6, 0xd5, 0xc5, 0xd9, 0x40, 0x40, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "owner", 
-         EBCDIC_OWNER_KEY, 
+         ebcdic_owner_key, 
          pKVCTL_req,
          base_segment->owner, 
          pLog
@@ -179,12 +185,14 @@ void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMEN
    }
    // Add 'special' field
    if (base_segment->special != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+      char ebcdic_special_key[8] = { 0xe2, 0xd7, 0xc5, 0xc3, 0xc9, 0xc1, 0xd3, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "special", 
-         EBCDIC_SPECIAL_KEY, 
+         ebcdic_special_key, 
          pKVCTL_req,
          base_segment->special,
          pLog
@@ -214,21 +222,25 @@ USHORT count_base_segment_fields(BASE_SEGMENT_T *base_segment) {
 void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMENT_T *omvs_segment, LOGGER_T *pLog) {
    // Build OMVS segment header
    USHORT field_count = count_omvs_segment_fields(omvs_segment);
+   // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+   char ebcdic_omvs_key[8] =    { 0xd6, 0xd4, 0xe5, 0xe2, 0x40, 0x40, 0x40, 0x40 };
    // Create segment descriptor at location where finger is pointing.
    // Return value should be finger pointer to where the first field descriptor should be cerated.
-   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, &EBCDIC_OMVS_KEY, field_count);
+   finger = build_segment_descriptor((UADMIN_SDESC_T *)finger, ebcdic_omvs_key, field_count);
    if (finger == NULL) {
       log_error(pLog, "Unable to create 'R_ADMIN_SDESC_T' for 'omvs' segment.");
       return NULL;
    }
    // Add 'uid' field
    if (omvs_segment->uid != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+      char ebcidc_uid_key[8] = { 0xe4, 0xc9, 0xc4, 0x40, 0x40, 0x40, 0x40, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "uid", 
-         EBCDIC_UID_KEY, 
+         ebcidc_uid_key, 
          pKVCTL_req,
          omvs_segment->uid, 
          pLog
@@ -240,12 +252,14 @@ void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMEN
    }
    // Add 'home' field
    if (omvs_segment->home != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+      char ebcdic_home_key[8] = { 0xc8, 0xd6, 0xd4, 0xc5, 0x40, 0x40, 0x40, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "home", 
-         EBCDIC_HOME_KEY, 
+         ebcdic_home_key, 
          pKVCTL_req,
          omvs_segment->home, 
          pLog
@@ -257,12 +271,14 @@ void* uadmin_build_omvs_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, OMVS_SEGMEN
    }
    // Add 'program' field
    if (omvs_segment->program != NULL) {
+      // Padded with 0x40 (blank) to match what r_admin assembler interface expects.
+      char ebcdic_program_key[8] = { 0xd7, 0xd9, 0xd6, 0xc7, 0xd9, 0xc1, 0xd4, 0x40 };
       // Create field descriptor at location where finger is pointing.
       // Return value should be finger pointer to where next field/segment descriptor should be created.
       finger = build_field_descriptor(
          (UADMIN_FDESC_T *)finger,
          "program", 
-         EBCDIC_PROGRAM_KEY, 
+         ebcidc_program_key, 
          pKVCTL_req,
          omvs_segment->program, 
          pLog
@@ -287,30 +303,25 @@ USHORT count_omvs_segment_fields(OMVS_SEGMENT_T *omvs_segment) {
    return field_count;
 }
 
-void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, const char *ebcdic_key, USHORT field_count) {
+void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, char *ebcdic_key, USHORT field_count) {
    // Set name/key (always size 8)
    memcpy(segment_descriptor->name, ebcdic_key, 8);
-   printf("name: %d", &segment_descriptor->name);
    // Set flag to 'Y'
    segment_descriptor->flag = YES_FLAG;
-   printf("flag: %d", &segment_descriptor->flag);
    // Set number of fields
    segment_descriptor->nFields = field_count;
-   printf("nFields: %d", &segment_descriptor->nFields);
    // Return value is a pointer to the location where the first field descriptor should be created.
-   printf("next: %d",  (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T));
    return (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T);
 }
 
 void* build_field_descriptor(
       UADMIN_FDESC_T *field_descriptor,
       char *eye_catcher, 
-      const char *ebcdic_key, 
+      char *ebcdic_key, 
       KV_CTL_T *pKVCTL_req, 
       KV_T *pKV, 
       LOGGER_T *pLog
 ) {
-   printf("Key: %08x\n", *ebcdic_key);
    log_debug(pLog, "Creating field descriptor '%s'.", pKV->pKey);
    // if key-value is 'VAL_TYPE_TXT' add key-value field descriptor.
    KVV_T *pKVV = kvv_get(pKVCTL_req, pKV, VAL_TYPE_TXT);
@@ -331,7 +342,7 @@ void* build_field_descriptor(
 void* build_key_value_field_descriptor(
       UADMIN_FDESC_T *field_descriptor,
       char *eye_catcher, 
-      const char *ebcdic_key, 
+      char *ebcdic_key, 
       KVV_T *pKVV,
       LOGGER_T *pLog
 ) {
@@ -359,7 +370,7 @@ void* build_key_value_field_descriptor(
 void* build_boolean_field_descriptor(
       UADMIN_FDESC_T *field_descriptor,
       char * eye_catcher, 
-      const char *ebcdic_key, 
+      char *ebcdic_key, 
       KVV_T *pKVV,
       LOGGER_T *pLog
 ) {
