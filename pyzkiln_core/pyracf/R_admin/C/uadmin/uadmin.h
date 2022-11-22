@@ -26,8 +26,9 @@
 // Constants
 #define L_RACF_WORK_AREA 1024
 
+#pragma pack(1) // Make sure there is no padding in between fields in UADMIN_SDESC and UADMIN_FDESC.
 // UADMIN Segment descriptor
-typedef struct __attribute__((__packed__)) UADMIN_SDESC {
+typedef struct UADMIN_SDESC {
    char     name[8];                 // segment name, upper case, blank padded
    FLAG     flag;                    // EBCDIC byte 'Y' or 'N'
    USHORT   nFields;                 // number of fields
@@ -42,6 +43,7 @@ typedef struct UADMIN_FDESC {
                                  // variable length data
                                  // then start of next field descriptor
    } UADMIN_FDESC_T;
+#pragma pack(pop) // Restore structure packing.
 
 // We have to marshall our arguments into a 31-bit area that the RACF 
 // interface can use.  Not only do the arguments have to live in this
