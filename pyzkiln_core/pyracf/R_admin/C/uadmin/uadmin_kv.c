@@ -288,11 +288,15 @@ USHORT count_omvs_segment_fields(OMVS_SEGMENT_T *omvs_segment) {
 void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, const char *ebcdic_key, USHORT field_count) {
    // Set name/key (always size 8)
    memcpy(segment_descriptor->name, ebcdic_key, 8);
+   printf("name: %d", &segment_descriptor->name);
    // Set flag to 'Y'
    segment_descriptor->flag = YES_FLAG;
+   printf("flag: %d", &segment_descriptor->flag);
    // Set number of fields
    segment_descriptor->nFields = field_count;
+   printf("nFields: %d", &segment_descriptor->nFields);
    // Return value is a pointer to the location where the first field descriptor should be created.
+   printf("next: %d",  (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T));
    return (BYTE *)segment_descriptor + sizeof(UADMIN_SDESC_T);
 }
 
