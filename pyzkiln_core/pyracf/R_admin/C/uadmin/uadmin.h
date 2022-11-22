@@ -27,7 +27,7 @@
 #define L_RACF_WORK_AREA 1024
 
 // UADMIN Segment descriptor
-typedef struct UADMIN_SDESC {
+typedef struct __attribute__((__packed__)) UADMIN_SDESC {
    char     name[8];                 // segment name, upper case, blank padded
    FLAG     flag;                    // EBCDIC byte 'Y' or 'N'
    USHORT   nFields;                 // number of fields
