@@ -138,7 +138,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           if (field_data_tmp == NULL) 
              return NULL;
           // copy field_data to field_data_tmp as ASCII.
-          tc_e2a(&(field_data[0]), &(field_data_tmp[0]), p_fld->l_data, pLog);
+          tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
           printf("  data: %s\n", field_data_tmp);
           free(field_data_tmp);
        }
