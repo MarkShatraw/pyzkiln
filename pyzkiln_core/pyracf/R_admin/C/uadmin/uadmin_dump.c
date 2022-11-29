@@ -94,6 +94,7 @@ void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *
        if (finger == NULL)
           log_error(pLog, "Something went wrong while creating segments.");
           return;
+       printf("nSegments: %d\n", nSegments);
        i_seg++;
       }
 
