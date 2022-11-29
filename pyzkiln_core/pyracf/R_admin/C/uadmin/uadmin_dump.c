@@ -151,6 +151,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
        finger += sizeof(UADMIN_FDESC_T) + p_fld->l_data;
        i_fld++;
       }
+    return finger;
    }                                   // uadmin_print_fields
 
 
