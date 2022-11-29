@@ -137,6 +137,8 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           field_data_tmp = (char *)calloc(p_fld->l_data + 1, sizeof(char));
           if (field_data_tmp == NULL) 
              return NULL;
+          printf("POINTERS: field_data: %p    |     field_data_tmp:%p    |\n", field_data, field_data_tmp);
+          printf("CONTENTS: field_data: %16s    |     field_data_tmp:%16s    |\n", &field_data, &field_data_tmp);
           // copy field_data to field_data_tmp as ASCII.
           tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
           printf("  data: %s\n", field_data_tmp);
