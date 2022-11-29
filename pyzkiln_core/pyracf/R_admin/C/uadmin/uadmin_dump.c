@@ -103,7 +103,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
     int i_fld = 1;
     char fld_name[9];                  // var for null-terminating strings
     char * field_data;                 // pointer to field data in 31 bit area.
-    char * field_data_tmp;             // pointer for temporary buffer used for displaying field data.
+    char field_data_tmp[10];           // pointer for temporary buffer used for displaying field data.
     UADMIN_FDESC_T * p_fld;            // pointer to field descriptor.        
 
     while(i_fld <= nFields)
@@ -134,7 +134,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           // Field data located at the end of the field descriptor.
           field_data = (char *)finger + sizeof(UADMIN_FDESC_T);
           // Create temporary buffer that is the size of field data plus one to make it null terminated.
-          field_data_tmp = (char *)calloc(p_fld->l_data + 1, sizeof(char));
+          //field_data_tmp = (char *)calloc(p_fld->l_data + 1, sizeof(char));
           if (field_data_tmp == NULL) 
              return NULL;
           printf("POINTERS: field_data: %p    |     field_data_tmp:%p    |\n", field_data, field_data_tmp);
@@ -146,7 +146,7 @@ void* uadmin_print_fields(BYTE* finger, int nFields, BYTE *pParms, LOGGER_T *pLo
           // copy field_data to field_data_tmp as ASCII.
           tc_e2a(field_data, field_data_tmp, p_fld->l_data, pLog);
           printf("  data: %s\n", field_data_tmp);
-          free(field_data_tmp);
+          //free(field_data_tmp);
        }
        else {
           printf("  data: N/A (boolean field only)\n");
