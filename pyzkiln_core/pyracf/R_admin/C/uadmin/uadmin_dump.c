@@ -92,9 +92,10 @@ void uadmin_print_segments(BYTE *finger, int nSegments, BYTE *pParms, LOGGER_T *
        // Return value should be a pointer to the start of the next segment.
        finger = uadmin_print_fields(finger, p_seg->nFields, pParms, pLog);
        printf("print fields complete.\n");
-       if (finger == NULL)
+       if (finger == NULL) {
           log_error(pLog, "Something went wrong while creating segments.");
           return;
+       }
        printf("nSegments: %d\n", nSegments);
        i_seg++;
       }
