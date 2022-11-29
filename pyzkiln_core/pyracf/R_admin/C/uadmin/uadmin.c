@@ -219,6 +219,5 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         return WARNING;
        }
     // Before we actually try to call RACF, let verify that the data looks ok first.
-    return FAILURE;
-    //return rc;
+    return rc;
    }
