@@ -131,7 +131,7 @@ KV_CTL_T *uadmin_results_to_kv(UADMIN_CTL_T *, R_ADMIN_UADMIN_PARMS_T *);
 
 // User administration dump methods.
 void uadmin_raw_dump(R_ADMIN_UADMIN_PARMS_T *);
-void uadmin_p31_raw_dump(UADMIN_CALL_ARGS_LIST *);
+void uadmin_p31_raw_dump(UADMIN_CALL_ARGS_LIST_T *);
 void uadmin_print(R_ADMIN_UADMIN_PARMS_T *, LOGGER_T *);
 void uadmin_dump(R_ADMIN_UADMIN_PARMS_T *, LOGGER_T *);
 void uadmin_dump_args_parms(UADMIN_CTL_T *, LOGGER_T *);

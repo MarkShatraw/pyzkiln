@@ -34,10 +34,10 @@ void uadmin_raw_dump(R_ADMIN_UADMIN_PARMS_T *pParms) {
    fclose(dump_file);
 }
 
-void uadmin_p31_raw_dump(UADMIN_CALL_ARGS_LIST *arg_list) {
+void uadmin_p31_raw_dump(UADMIN_CALL_ARGS_LIST_T *arg_list) {
    char* bytes = (char*)arg_list;
    FILE* dump_file = fopen("p31.dump", "wb+");
-   fwrite(bytes, 1, sizeof(UADMIN_CALL_ARGS_LIST), dump_file);
+   fwrite(bytes, 1, sizeof(UADMIN_CALL_ARGS_LIST_T), dump_file);
    fclose(dump_file);
 }
 
