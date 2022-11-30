@@ -34,6 +34,12 @@ void uadmin_raw_dump(R_ADMIN_UADMIN_PARMS_T *pParms) {
    fclose(dump_file);
 }
 
+void uadmin_p31_raw_dump(UADMIN_UNDERBAR_ARG_AREA_T *p31) {
+   char* bytes = (char*)p31;
+   FILE* dump_file = fopen("p31.dump", "wb+");
+   fwrite(bytes, 1, sizeof(UADMIN_UNDERBAR_ARG_AREA_T), dump_file);
+   fclose(dump_file);
+}
 
 //
 // Formatted print of user administration function control blocks.

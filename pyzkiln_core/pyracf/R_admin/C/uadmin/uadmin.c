@@ -190,7 +190,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
             (LOGGER_T *)pUADMINCtl->pLog
          );
 
-       uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
+       //uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
 
         // Now build a 31-bit argument list so that we can make the transition from
         // 64-bit XPLINK to 31-bit OSLINK.
@@ -211,6 +211,8 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         // Turn on the high order bit of the last argument - marks the end of the
         // argument list.
         *((unsigned int *__ptr32)&p31->arg_list.ppOutbuf) |= 0x80000000;
+
+        uadmin_p31_raw_dump(p31);
 
         //uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
        }
