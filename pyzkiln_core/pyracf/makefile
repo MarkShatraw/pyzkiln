@@ -9,7 +9,7 @@ CC=c89
 RM=rm -f
 
 # Global arguments
-LIB_LARGS=-Wl,"DLL,XPLINK,LP64"
+LIB_LARGS=-Wl,"DLL,XPLINK,LP64,ac=1,extattr=apf"
 
 # Object archives for C builts code
 LIB_CSECTS=$(BASE)/R_admin/C/r_admin.o
