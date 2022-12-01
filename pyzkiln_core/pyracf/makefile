@@ -24,6 +24,7 @@ all:
 
 	@echo "--- Linking $(NAME)"
 	${CC} $(LIB_LARGS) -o $(LIB) $(LIB_CSECTS) $(LIB_ARCHS)
+	extattr +a $(LIB)
 
 clean:
 	@$(MAKE) -c $(BASE)/common/C clean
