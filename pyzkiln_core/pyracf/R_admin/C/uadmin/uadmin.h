@@ -63,6 +63,8 @@ typedef struct UADMIN_CALL_ARGS {
 
    R_ADMIN_UADMIN_PARMS_T uadmin_parms;     // user administration parm area
 
+   PROF_NAME_T prof_name;              // name of profile
+
    UINT ACEE;                          // output area for the service
    BYTE outbuf_subpool;
 
@@ -84,6 +86,8 @@ typedef struct UADMIN_CALL_ARGS_LIST {
    BYTE * __ptr32 pFunc_code;
 
    R_ADMIN_UADMIN_PARMS_T * __ptr32 pUADMIN_parms;
+
+   char * __ptr32 pProf_name;
 
    UINT * __ptr32 pACEE;
    BYTE * __ptr32 pOutbuf_subpool;
@@ -126,7 +130,7 @@ typedef struct UADMIN_CTL {
 KV_CTL_T *uadmin_run(R_ADMIN_CTL_T *, LOGGER_T *);
 
 // User administration to key-value list.
-RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *, KV_CTL_T *, LOGGER_T *);
+RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *, PROF_NAME_T *, KV_CTL_T *, LOGGER_T *);
 KV_CTL_T *uadmin_results_to_kv(UADMIN_CTL_T *, R_ADMIN_UADMIN_PARMS_T *);
 
 // User administration dump methods.

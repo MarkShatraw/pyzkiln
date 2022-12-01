@@ -186,6 +186,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         // Build segments
         uadmin_kv_to_segments(
             (R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), 
+            (PROF_NAME_T *) &(p31->args.prof_name),
             (KV_CTL_T *)pKVCtl_req, 
             (LOGGER_T *)pUADMINCtl->pLog
          );
@@ -204,6 +205,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
 
         p31->arg_list.pFunc_code = &(p31->args.func_code);
         p31->arg_list.pUADMIN_parms = &(p31->args.uadmin_parms);
+        p31->arg_list.pProf_name = &(p31->args.prof_name.name[0]);
         p31->arg_list.pACEE = &(p31->args.ACEE);
         p31->arg_list.pOutbuf_subpool = &(p31->args.outbuf_subpool);
         p31->arg_list.ppOutbuf = &(p31->args.pOutbuf);

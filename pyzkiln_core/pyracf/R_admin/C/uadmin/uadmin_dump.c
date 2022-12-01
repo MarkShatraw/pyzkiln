@@ -281,6 +281,7 @@ void uadmin_dump_args_parms(UADMIN_CTL_T *pUADMINCtl, LOGGER_T *pLog)
     log_debug(pLog, "  pALET_RACF_rsn: %08x,  pRACF_rsn: %08x", p31->arg_list.pALET_RACF_rsn, p31->arg_list.pRACF_rsn);
     log_debug(pLog, "  pFunc_code:  %08x", p31->arg_list.pFunc_code);
     log_debug(pLog, "  pUADMIN_parms: %08x", p31->arg_list.pUADMIN_parms);
+    log_debug(pLog, "  pProf_name:  %08x", p31->arg_list.pProf_name);
     log_debug(pLog, "  pACEE:       %08x", p31->arg_list.pACEE);
     log_debug(pLog, "  pOutbuf_subpool:  %08x", p31->arg_list.pOutbuf_subpool);
     log_debug(pLog, "  ppOutbuf:  %08x", p31->arg_list.ppOutbuf);

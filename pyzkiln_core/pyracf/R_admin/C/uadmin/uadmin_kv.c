@@ -50,8 +50,12 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 //
 // Mainline code
 //
-RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCtl_req, LOGGER_T *pLog)
-{    
+RC uadmin_kv_to_segments(
+      R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, 
+      PROF_NAME_T *prof_name, 
+      KV_CTL_T *pKVCtl_req, 
+      LOGGER_T *pLog
+) {    
    log_debug(pLog, "Start kv to segments.");
    RC rc = SUCCESS;
    // extract userid
@@ -105,6 +109,8 @@ RC uadmin_kv_to_segments(R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, KV_CTL_T *pKVCt
    rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
    if (rc == FAILURE)
       return rc;
+   // Set userid for both p_uadmin_pamrs and prof_name.
+   memcpy(prof_name->name, EBC_userid, l_userid);
    memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
    p_uadmin_parms->l_userid = l_userid;
    p_uadmin_parms->n_segs = n_segs;
