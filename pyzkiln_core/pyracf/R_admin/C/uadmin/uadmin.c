@@ -214,9 +214,9 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         // argument list.
         *((unsigned int *__ptr32)&p31->arg_list.ppOutbuf) |= 0x80000000;
 
-        //uadmin_p31_raw_dump(&(p31->arg_list));
+        uadmin_p31_raw_dump(&(p31->arg_list));
         uadmin_print(&(p31->args.uadmin_parms), pUADMINCtl->pLog);
-        //uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
+        uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
        }
 
     else
