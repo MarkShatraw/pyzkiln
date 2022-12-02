@@ -109,9 +109,8 @@ RC uadmin_kv_to_segments(
    rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
    if (rc == FAILURE)
       return rc;
-   uadmin_print(p_uadmin_parms, pLog);
    // Set userid for both p_uadmin_pamrs and prof_name.
-   memcpy(prof_name->name, EBC_userid, l_userid);
+   //memcpy(prof_name->name, EBC_userid, l_userid);
    memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
    p_uadmin_parms->l_userid = l_userid;
    p_uadmin_parms->n_segs = n_segs;
