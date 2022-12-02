@@ -312,6 +312,8 @@ USHORT count_omvs_segment_fields(OMVS_SEGMENT_T *omvs_segment) {
 void* build_segment_descriptor(UADMIN_SDESC_T *segment_descriptor, char *ebcdic_key, USHORT field_count) {
    // Set name/key (always size 8)
    memcpy(segment_descriptor->name, ebcdic_key, 8);
+   for (int i = 0; i < 8; i++)
+      printf("Base: %02x", segment_descriptor->name[i]);
    // Set flag to 'Y'
    segment_descriptor->flag = YES_FLAG;
    // Set number of fields
