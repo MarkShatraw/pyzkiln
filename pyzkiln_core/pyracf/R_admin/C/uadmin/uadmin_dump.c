@@ -206,7 +206,7 @@ void uadmin_dump_segments(BYTE *finger, int nSegments, LOGGER_T *pLog)
        printf("Segment %d (UADMIN_SDESC_T)\n", i_seg);
        printf("   +0 name:        %s\n",seg_name);
        printf("   +8 flags:       %02x\n",p_seg->flag);
-       printf("   +r nFields:    %d\n",p_seg->nFields);
+       printf("   +9 nFields:     %d\n",p_seg->nFields);
 
        // For UADMIN, all of the fields associated with a segment follow follow it.
        // Set finger pointer to start of first field descriptor.
@@ -239,7 +239,7 @@ void* uadmin_dump_fields(BYTE *finger, int nFields, LOGGER_T *pLog)
        memset(fld_name, 0, sizeof(fld_name));
        tc_e2a(p_fld->name, &(fld_name[0]), sizeof(p_fld->name), pLog);
 
-       printf("Field %d (R_ADMIN_FDESC_T)\n", i_fld);
+       printf("Field %d (UADMIN_FDESC_T)\n", i_fld);
        printf("   +0 name:          %s\n",fld_name);
        printf("   +8 flag:          %02x\n",p_fld->flag);
        printf("   +9 l_data:        %d\n",p_fld->l_data);                      
