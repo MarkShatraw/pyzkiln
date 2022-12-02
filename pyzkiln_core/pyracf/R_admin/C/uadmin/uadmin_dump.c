@@ -68,7 +68,7 @@ void uadmin_print(R_ADMIN_UADMIN_PARMS_T *pParms, LOGGER_T *pLog)
     // The segments start at the end of R_ADMIN_UADMIN_PARMS_T.
     finger = (BYTE *)pParms + sizeof(R_ADMIN_UADMIN_PARMS_T);
 
-    uadmin_print_segments(finger, pParms->n_segs, (BYTE *)pParms, pLog);
+    uadmin_print_segments(finger, pParms->n_segs, pLog);
    }                                   // uadmin_print_output
 
 void uadmin_print_segments(BYTE *finger, int nSegments, LOGGER_T *pLog)
@@ -191,7 +191,7 @@ void uadmin_dump_segments(BYTE *finger, int nSegments, LOGGER_T *pLog)
    {                                   // uadmin_dump_segments
     int i_seg = 1;
     char seg_name[9];                  // var for null-terminating strings
-    R_ADMIN_SDESC_T *p_seg = p_sdesc;
+    UADMIN_SDESC_T *p_seg;             // pointer to the field descriptor.
 
     // keep looping until there are no segments left.
     while(i_seg <= nSegments)
