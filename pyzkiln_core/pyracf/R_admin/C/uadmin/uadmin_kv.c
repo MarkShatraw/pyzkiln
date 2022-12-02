@@ -110,7 +110,6 @@ RC uadmin_kv_to_segments(
    if (rc == FAILURE)
       return rc;
    // Set userid for both p_uadmin_pamrs and prof_name.
-   printf("prof name: %d\n", prof_name->name);
    memcpy(prof_name->name, EBC_userid, l_userid);
    memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
    p_uadmin_parms->l_userid = l_userid;

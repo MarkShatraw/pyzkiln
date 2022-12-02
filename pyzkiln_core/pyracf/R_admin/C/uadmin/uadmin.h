@@ -61,14 +61,15 @@ typedef struct UADMIN_CALL_ARGS {
 
    BYTE func_code;                     // user administration function to perform
 
-   R_ADMIN_UADMIN_PARMS_T uadmin_parms;     // user administration parm area
-
    PROF_NAME_T prof_name;              // name of profile
 
    UINT ACEE;                          // output area for the service
    BYTE outbuf_subpool;
 
    char * __ptr32 pOutbuf;             // R_admin returns data here
+
+   // Put uadmin parms at the end of the structure so that segments and fields can be variable length.
+   R_ADMIN_UADMIN_PARMS_T uadmin_parms;     // user administration parm area
    } UADMIN_CALL_ARGS_T;
 
 // Normal OS linkage conventions require a list of pointers for the 

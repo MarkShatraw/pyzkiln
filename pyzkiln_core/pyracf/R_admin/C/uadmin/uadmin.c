@@ -184,7 +184,6 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         kv_print(pKVCtl_req);
 
         // Build segments
-        printf("prof name: %d\n", p31->args.prof_name.name);
         uadmin_kv_to_segments(
             (R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), 
             (PROF_NAME_T *) &(p31->args.prof_name),
