@@ -184,12 +184,15 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
         kv_print(pKVCtl_req);
 
         // Build segments
-        uadmin_kv_to_segments(
+        p31->args.uadmin_parms = uadmin_kv_to_segments(
             (R_ADMIN_UADMIN_PARMS_T *) &(p31->args.uadmin_parms), 
             (PROF_NAME_T *) &(p31->args.prof_name),
             (KV_CTL_T *)pKVCtl_req, 
             (LOGGER_T *)pUADMINCtl->pLog
-         );
+        );
+
+        if (p31->args.uadmin_parms == NULL)
+            return FAILURE;
 
        //uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
 
