@@ -116,8 +116,8 @@ const FLAG NO_FLAG = 0xd5;  // 'N' in EBCDIC
 // A convenience method to group the allocation of all the required
 // storage areas.
 typedef struct UADMIN_UNDERBAR_ARG_AREA {
-   UADMIN_CALL_ARGS_T args;
    UADMIN_CALL_ARGS_LIST_T arg_list;
+   UADMIN_CALL_ARGS_T args;
    } UADMIN_UNDERBAR_ARG_AREA_T;
 
 // The main user administration anchor block.
