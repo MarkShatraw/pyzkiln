@@ -86,6 +86,7 @@ SKIPMALL DS    0H
 * the caller.                                                         *
 *---------------------------------------------------------------------*
 CALLPROG DS    0H
+         MODESET MODE=SUP
          LARL  R15,=V(IRRSEQ00)       Entry point to racf admin routine
          L     R15,0(0,R15)
          SAM31
@@ -94,6 +95,7 @@ CALLPROG DS    0H
          LMH   R2,R14,SAVEHIGH        Restore the high halves
          SAM64
          ST    R15,IRRSRC             Save the return code
+         MODESET MODE=PROB
          EJECT ,
 
 *---------------------------------------------------------------------*
