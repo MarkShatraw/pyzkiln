@@ -216,7 +216,7 @@ RC build_31bit_args(UADMIN_CTL_T *pUADMINCtl, R_ADMIN_CTL_T *pRACtl)
 
         uadmin_p31_raw_dump(&(p31->arg_list));
 
-        //uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
+        uadmin_dump_args_parms(pUADMINCtl, pUADMINCtl->pLog);
        }
 
     else
