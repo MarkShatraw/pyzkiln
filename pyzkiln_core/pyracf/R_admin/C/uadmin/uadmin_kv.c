@@ -50,14 +50,14 @@ int json_gen(R_ADMIN_CTL_T *, FLAG, FLAG, const char *, ...);
 //
 // Mainline code
 //
-void* uadmin_kv_to_segments(
+RC uadmin_kv_to_segments(
       R_ADMIN_UADMIN_PARMS_T *p_uadmin_parms, 
       PROF_NAME_T *prof_name, 
       KV_CTL_T *pKVCtl_req, 
       LOGGER_T *pLog
-) {
-   RC rc;
+) {    
    log_debug(pLog, "Start kv to segments.");
+   RC rc = SUCCESS;
    // extract userid
    KV_T *pKV = kv_get_list(pKVCtl_req);
    KV_T *useridKV = kv_get(pKVCtl_req, pKV, "userid", pKVCtl_req->lKV_list, KEY_REQUIRED);
@@ -86,7 +86,7 @@ void* uadmin_kv_to_segments(
       // Return value should be finger pointer to where the next segment should be created.
       finger = uadmin_build_base_segment(finger, pKVCtl_req, base_segment, pLog);
       if (finger == NULL)
-         return NULL;
+         return FAILURE;
       n_segs++;
    }
 
@@ -100,7 +100,7 @@ void* uadmin_kv_to_segments(
       // Return value should be finger pointer to where the next segment should be created.
       finger = uadmin_build_omvs_segment(finger, pKVCtl_req, omvs_segment, pLog);
       if (finger == NULL)
-         return NULL;
+         return FAILURE;
       n_segs++;
    }
 
@@ -108,7 +108,7 @@ void* uadmin_kv_to_segments(
    char EBC_userid[l_userid];
    rc = convert_to_ebcdic("Userid", userid, EBC_userid, l_userid, pLog);
    if (rc == FAILURE)
-      return NULL;
+      return rc;
    // Set userid for both p_uadmin_pamrs and prof_name.
    memcpy(prof_name->name, EBC_userid, l_userid);
    memcpy(p_uadmin_parms->userid, EBC_userid, l_userid);
@@ -117,7 +117,7 @@ void* uadmin_kv_to_segments(
    // Leave off_seg1 alone.
    uadmin_raw_dump(p_uadmin_parms);
    uadmin_print(p_uadmin_parms, pLog);
-   return p_uadmin_parms;
+   return SUCCESS;
 }
 
 void* uadmin_build_base_segment(BYTE *finger, KV_CTL_T * pKVCTL_req, BASE_SEGMENT_T *base_segment, LOGGER_T *pLog) {
