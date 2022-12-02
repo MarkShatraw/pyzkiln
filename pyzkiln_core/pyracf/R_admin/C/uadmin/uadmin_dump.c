@@ -278,8 +278,12 @@ void uadmin_dump_args_parms(UADMIN_CTL_T *pUADMINCtl, LOGGER_T *pLog)
     log_debug(pLog, "  func_code: %d,  p: %08x\n", p31->args.func_code, &(p31->args.func_code));
 
     uadmin_dump(&(p31->args.uadmin_parms), pLog);
+
+    char prof_name[MAX_PROF_NAME_LEN];
+    memset(prof_name, 0, sizeof(prof_name));
+    tc_e2a(&(p31->args.prof_name.name[0]), &(prof_name[0]), sizeof(prof_name), pLog);
    
-    log_debug(pLog, "  prof_name (%08x): %s", &(p31->args.prof_name.name), p31->args.prof_name.name);
+    log_debug(pLog, "  prof_name (%08x): %s", &(p31->args.prof_name.name), prof_name);
     log_debug(pLog, "  ACEE (%08x): %08x", &(p31->args.ACEE), p31->args.ACEE);
     log_debug(pLog, "  outbuf_subpool (%08x): %d", &(p31->args.outbuf_subpool), p31->args.outbuf_subpool);
     log_debug(pLog, "  pOutbuf (%08x): %08x\n", &(p31->args.pOutbuf), p31->args.pOutbuf);
